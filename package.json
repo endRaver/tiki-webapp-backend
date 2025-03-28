@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "seed:products": "node src/seeds/products.js"
+    "seed:products": "node src/seeds/products.js",
+    "build": "npm install"
   },
   "keywords": [],
   "author": "",
