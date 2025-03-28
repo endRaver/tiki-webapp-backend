@@ -32,7 +32,7 @@ export const createProduct = async (req, res) => {
     let imageUrls = [];
     if (imageFilesArray.length > 0) {
       for (const imageFile of imageFilesArray) {
-        if (!imageFile || !imageFile.data) {
+        if (!imageFile?.data) {
           console.error("Invalid file:", imageFile);
           continue;
         }
@@ -52,6 +52,15 @@ export const createProduct = async (req, res) => {
       );
     }
 
+    // Create authors array
+    let authorsArray = [];
+    for (const author of authors) {
+      authorsArray.push({
+        name: author,
+        slug: author.toLowerCase().replace(/ /g, '-')
+      });
+    }
+
     // Create the product object matching the schema
     const productData = {
       name,
@@ -59,7 +68,7 @@ export const createProduct = async (req, res) => {
       short_description,
       original_price: price,
       list_price: price,
-      authors: authors || [], // If authors is provided, use it, otherwise empty array
+      authors: authorsArray || [], // If authors is provided, use it, otherwise empty array
       categories: {
         name: category,
         is_leaf: false
@@ -96,6 +105,15 @@ export const updateProduct = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    // Create authors array
+    let authorsArray = [];
+    for (const author of authors) {
+      authorsArray.push({
+        name: author,
+        slug: author.toLowerCase().replace(/ /g, '-')
+      });
+    }
+
     let imagesArray = [];
     // Upload new image to Cloudinary
     let imageFilesArray = Array.isArray(images)
@@ -104,7 +122,7 @@ export const updateProduct = async (req, res) => {
 
     if (imageFilesArray.length > 0) {
       for (const imageFile of imageFilesArray) {
-        if (!imageFile || !imageFile.data) {
+        if (!imageFile?.data) {
           console.error("Invalid file:", imageFile);
           continue;
         }
@@ -124,11 +142,12 @@ export const updateProduct = async (req, res) => {
       );
     }
 
+
     const updateData = {
       name,
       description,
       category,
-      authors,
+      authors: authorsArray,
       short_description,
       price,
       images: imagesArray
