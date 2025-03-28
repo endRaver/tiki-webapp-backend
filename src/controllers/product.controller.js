@@ -52,6 +52,16 @@ export const createProduct = async (req, res) => {
       );
     }
 
+    const images = imageUrls.map((imageUrl) => ({
+      base_url: imageUrl,
+      is_gallery: true,
+      label: '',
+      large_url: imageUrl,
+      medium_url: imageUrl,
+      small_url: imageUrl,
+      thumbnail_url: imageUrl,
+    }));
+
     // Create authors array
     let authorsArray = [];
     for (const author of authors) {
@@ -84,7 +94,7 @@ export const createProduct = async (req, res) => {
         is_best_store: false,
         is_offline_installment_supported: false
       },
-      images: imageUrls || [],
+      images: images,
     };
 
     const product = await Product.create(productData);
@@ -129,7 +139,7 @@ export const updateProduct = async (req, res) => {
         try {
           const imageUrl = await uploadToCloudinary(
             imageFile,
-            "Cakery19/products"
+            "Ecommerce-Store/products"
           );
           imagesArray.push(imageUrl);
         } catch (error) {
@@ -142,6 +152,15 @@ export const updateProduct = async (req, res) => {
       );
     }
 
+    const imagesData = imagesArray.map((imageUrl) => ({
+      base_url: imageUrl,
+      is_gallery: true,
+      label: '',
+      large_url: imageUrl,
+      medium_url: imageUrl,
+      small_url: imageUrl,
+      thumbnail_url: imageUrl,
+    }));
 
     const updateData = {
       name,
@@ -150,7 +169,7 @@ export const updateProduct = async (req, res) => {
       authors: authorsArray,
       short_description,
       price,
-      images: imagesArray
+      images: imagesData
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });

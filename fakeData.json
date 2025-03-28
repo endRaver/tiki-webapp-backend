@@ -3,19 +3,15 @@
     {
       "authors": [
         {
-          "id": 13992,
           "name": "Robin Sharma",
           "slug": "robin-sharma"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 316,
         "name": "Sách tiếng Việt",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 1,
         "sku": "2331938564882",
         "name": "Tiki Trading",
         "link": "https://tiki.vn/cua-hang/tiki-trading",
@@ -68,7 +64,6 @@
               "value": "13 x 20.5 cm"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -79,18 +74,14 @@
             }
           ]
         }
-      ],
-      "id": "6"
+      ]
     },
     {
-      "book_cover": null,
       "categories": {
-        "id": 316,
         "name": "Sách tiếng Việt",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 53660,
         "sku": "9472871563136",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -143,7 +134,6 @@
               "value": "Nguyễn Bích Lan , Tô Yến Ly"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -159,25 +149,20 @@
             }
           ]
         }
-      ],
-      "id": "7"
+      ]
     },
     {
       "authors": [
         {
-          "id": 363,
           "name": "Haruki Murakami",
           "slug": "haruki-murakami"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 316,
         "name": "Sách tiếng Việt",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 53660,
         "sku": "3768008611042",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -235,7 +220,6 @@
               "value": "Trịnh Lữ"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -251,25 +235,20 @@
             }
           ]
         }
-      ],
-      "id": "8"
+      ]
     },
     {
       "authors": [
         {
-          "id": 9173,
           "name": "Paulo Coelho",
           "slug": "paulo-coelho"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 316,
         "name": "Sách tiếng Việt",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 53660,
         "sku": "3991931835717",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -322,7 +301,6 @@
               "value": "13 x 21 cm"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -338,25 +316,20 @@
             }
           ]
         }
-      ],
-      "id": "9"
+      ]
     },
     {
       "authors": [
         {
-          "id": 7142,
           "name": "Napoleon Hill",
           "slug": "napoleon-hill"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 385,
         "name": "Sách kỹ năng làm việc",
         "is_leaf": true
       },
       "current_seller": {
-        "id": 1,
         "sku": "6605507480757",
         "name": "Tiki Trading",
         "link": "https://tiki.vn/cua-hang/tiki-trading",
@@ -429,7 +402,6 @@
               "value": "Ross Cornwell -Thảo Triều"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -445,25 +417,20 @@
             }
           ]
         }
-      ],
-      "id": "10"
+      ]
     },
     {
       "authors": [
         {
-          "id": 638625,
           "name": "Albert Rutherford",
           "slug": "albert-rutherford"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 316,
         "name": "Sách tiếng Việt",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 53660,
         "sku": "8365231991803",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -526,7 +493,6 @@
               "value": "13 x 19 cm"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -542,25 +508,20 @@
             }
           ]
         }
-      ],
-      "id": "12"
+      ]
     },
     {
       "authors": [
         {
-          "id": 4213891,
           "name": "A Crazy Mind team",
           "slug": "a-crazy-mind-team"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 316,
         "name": "Sách tiếng Việt",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 53660,
         "sku": "3277474975317",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -613,7 +574,6 @@
               "value": "13 x 20.5 cm"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -629,18 +589,14 @@
             }
           ]
         }
-      ],
-      "id": "13"
+      ]
     },
     {
-      "book_cover": null,
       "categories": {
-        "id": 845,
         "name": "Truyện ngắn - Tản văn - Tạp Văn",
         "is_leaf": true
       },
       "current_seller": {
-        "id": 9988,
         "sku": "8897351166941",
         "name": "AHABOOKS",
         "link": "https://tiki.vn/cua-hang/ahabooks",
@@ -729,25 +685,20 @@
             }
           ]
         }
-      ],
-      "id": "14"
+      ]
     },
     {
       "authors": [
         {
-          "id": 572221,
           "name": "Donald Keene",
           "slug": "donald-keene"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 842,
         "name": "Tác phẩm kinh điển",
         "is_leaf": true
       },
       "current_seller": {
-        "id": 281062,
         "sku": "6076974972755",
         "name": "Bamboo Books",
         "link": "https://tiki.vn/cua-hang/bamboo-books",
@@ -836,7 +787,6 @@
               "value": "Ca Lâu Ca"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -852,18 +802,14 @@
             }
           ]
         }
-      ],
-      "id": "15"
+      ]
     },
     {
-      "book_cover": null,
       "categories": {
-        "id": 842,
         "name": "Tác phẩm kinh điển",
         "is_leaf": true
       },
       "current_seller": {
-        "id": 223928,
         "sku": "8441299338953",
         "name": "BÌNH BÁN BOOK",
         "link": "https://tiki.vn/cua-hang/binh-ban-book",
@@ -1032,25 +978,20 @@
             }
           ]
         }
-      ],
-      "id": "16"
+      ]
     },
     {
       "authors": [
         {
-          "id": 12018,
           "name": "Fyodor Dostoyevsky",
           "slug": "fyodor-dostoyevsky"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 842,
         "name": "Tác phẩm kinh điển",
         "is_leaf": true
       },
       "current_seller": {
-        "id": 1,
         "sku": "7304598894052",
         "name": "Tiki Trading",
         "link": "https://tiki.vn/cua-hang/tiki-trading",
@@ -1108,7 +1049,6 @@
               "value": "Phạm Mạnh Hùng"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa cứng"
             },
@@ -1124,25 +1064,20 @@
             }
           ]
         }
-      ],
-      "id": "17"
+      ]
     },
     {
       "authors": [
         {
-          "id": 10480,
           "name": "La Quán Trung",
           "slug": "la-quan-trung"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 842,
         "name": "Tác phẩm kinh điển",
         "is_leaf": true
       },
       "current_seller": {
-        "id": 229927,
         "sku": "3040242832610",
         "name": "Đông A Books Official",
         "link": "https://tiki.vn/cua-hang/dong-a-books-official",
@@ -1190,7 +1125,6 @@
               "value": "19 x 13 cm"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa cứng"
             },
@@ -1206,25 +1140,20 @@
             }
           ]
         }
-      ],
-      "id": "18"
+      ]
     },
     {
       "authors": [
         {
-          "id": 4415443,
           "name": "Instant Research Institude",
           "slug": "instant-research-institude"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 871,
         "name": "Sách tư duy - Kỹ năng sống",
         "is_leaf": true
       },
       "current_seller": {
-        "id": 36846,
         "sku": "8529844688334",
         "name": "Minh Long Book",
         "link": "https://tiki.vn/cua-hang/minh-long-book",
@@ -1362,7 +1291,6 @@
               "value": "2022-04-16 14:45:25"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -1378,25 +1306,20 @@
             }
           ]
         }
-      ],
-      "id": "19"
+      ]
     },
     {
       "authors": [
         {
-          "id": 163121,
           "name": "Steven Schuster",
           "slug": "steven-schuster"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 316,
         "name": "Sách tiếng Việt",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 53660,
         "sku": "7757939477726",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -1464,7 +1387,6 @@
               "value": "Diệp Ngô"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -1480,25 +1402,20 @@
             }
           ]
         }
-      ],
-      "id": "20"
+      ]
     },
     {
       "authors": [
         {
-          "id": 114261,
           "name": "Nguyễn Anh Dũng",
           "slug": "nguyen-anh-dung"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 871,
         "name": "Sách tư duy - Kỹ năng sống",
         "is_leaf": true
       },
       "current_seller": {
-        "id": 10684,
         "sku": "5073534261497",
         "name": "Sbooks",
         "link": "https://tiki.vn/cua-hang/sbooks",
@@ -1601,7 +1518,6 @@
               "value": "Tiếng việt"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -1617,25 +1533,20 @@
             }
           ]
         }
-      ],
-      "id": "21"
+      ]
     },
     {
       "authors": [
         {
-          "id": 8318,
           "name": "Raymond Murphy",
           "slug": "raymond-murphy"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 320,
         "name": "English Books",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 53660,
         "sku": "5587108239013",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -1914,25 +1825,20 @@
             }
           ]
         }
-      ],
-      "id": "22"
+      ]
     },
     {
       "authors": [
         {
-          "id": 7807,
           "name": "Michael McCarthy",
           "slug": "michael-mccarthy"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 320,
         "name": "English Books",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 53660,
         "sku": "8137273901726",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -1986,25 +1892,20 @@
             }
           ]
         }
-      ],
-      "id": "23"
+      ]
     },
     {
       "authors": [
         {
-          "id": 112340,
           "name": "Mỹ Duy",
           "slug": "my-duy"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 14896,
         "name": "Grammar, vocabulary & skills",
         "is_leaf": true
       },
       "current_seller": {
-        "id": 128392,
         "sku": "9237815876213",
         "name": "trituepk",
         "link": "https://tiki.vn/cua-hang/trituepk",
@@ -2072,7 +1973,6 @@
               "value": "9786048461133"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Bìa mềm"
             },
@@ -2083,25 +1983,20 @@
             }
           ]
         }
-      ],
-      "id": "24"
+      ]
     },
     {
       "authors": [
         {
-          "id": 843855,
           "name": "VARIOS AUTORES",
           "slug": "varios-autores"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 14896,
         "name": "Grammar, vocabulary & skills",
         "is_leaf": true
       },
       "current_seller": {
-        "id": 53660,
         "sku": "4512866829739",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -2155,25 +2050,20 @@
             }
           ]
         }
-      ],
-      "id": "25"
+      ]
     },
     {
       "authors": [
         {
-          "id": 843855,
           "name": "VARIOS AUTORES",
           "slug": "varios-autores"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 14896,
         "name": "Grammar, vocabulary & skills",
         "is_leaf": true
       },
       "current_seller": {
-        "id": 53660,
         "sku": "3314353813228",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -2287,25 +2177,20 @@
             }
           ]
         }
-      ],
-      "id": "26"
+      ]
     },
     {
       "authors": [
         {
-          "id": 46343,
           "name": "R. J. Palacio",
           "slug": ""
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 9,
         "name": "Fiction - Literature",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 53660,
         "sku": "9396019263873",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -2368,7 +2253,6 @@
               "value": "198 x 129 x 20 mm"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Paperback"
             },
@@ -2379,25 +2263,20 @@
             }
           ]
         }
-      ],
-      "id": "27"
+      ]
     },
     {
       "authors": [
         {
-          "id": 10081,
           "name": "Antoine De Saint-Exupéry",
           "slug": "antoine-desaint-exupery"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 9,
         "name": "Fiction - Literature",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 12696,
         "sku": "4674425006297",
         "name": "Blue Horizon Books",
         "link": "https://tiki.vn/cua-hang/blue-horizon-books",
@@ -2480,7 +2359,6 @@
               "value": "198 x 129 x 6 mm"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Paperback"
             },
@@ -2496,25 +2374,20 @@
             }
           ]
         }
-      ],
-      "id": "28"
+      ]
     },
     {
       "authors": [
         {
-          "id": 5348,
           "name": "Aesop",
           "slug": "aesop"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 9,
         "name": "Fiction - Literature",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 1231,
         "sku": "8912006328762",
         "name": "Xunhasaba Thế giới Sách Ngoại văn",
         "link": "https://tiki.vn/cua-hang/xunhasaba-the-gioi-sach-ngoai-van",
@@ -2577,7 +2450,6 @@
               "value": "12.5 x 19.8 cm"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Paperback"
             },
@@ -2588,25 +2460,20 @@
             }
           ]
         }
-      ],
-      "id": "29"
+      ]
     },
     {
       "authors": [
         {
-          "id": 931,
           "name": "Frances Hodgson Burnett",
           "slug": "frances-hodgson-burnett"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 9,
         "name": "Fiction - Literature",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 53660,
         "sku": "2252779088217",
         "name": "Nhà sách Fahasa",
         "link": "https://tiki.vn/cua-hang/nha-sach-fahasa",
@@ -2669,7 +2536,6 @@
               "value": "188 x 129 x 24 mm"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Paperback"
             },
@@ -2685,25 +2551,20 @@
             }
           ]
         }
-      ],
-      "id": "30"
+      ]
     },
     {
       "authors": [
         {
-          "id": 315,
           "name": "Jonathan Swift",
           "slug": "jonathan-swift"
         }
       ],
-      "book_cover": null,
       "categories": {
-        "id": 9,
         "name": "Fiction - Literature",
         "is_leaf": false
       },
       "current_seller": {
-        "id": 6337,
         "sku": "1951403961346",
         "name": "Foreignbooks",
         "link": "https://tiki.vn/cua-hang/foreignbooks",
@@ -2766,7 +2627,6 @@
               "value": "12.5 x 19.5 cm"
             },
             {
-              "code": "book_cover",
               "name": "Loại bìa",
               "value": "Paperback"
             },
@@ -2782,8 +2642,7 @@
             }
           ]
         }
-      ],
-      "id": "31"
+      ]
     }
   ]
 }

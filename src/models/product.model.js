@@ -5,11 +5,9 @@ const productSchema = new mongoose.Schema({
     {
       name: {
         type: String,
-        required: [true, "Author name is required"],
       },
       slug: {
         type: String,
-        required: [true, "Author slug is required"],
       },
     }
   ],
@@ -71,8 +69,34 @@ const productSchema = new mongoose.Schema({
   },
   images: [
     {
-      type: String,
-      required: true,
+      base_url: {
+        type: String,
+        required: true,
+      },
+      is_gallery: {
+        type: Boolean,
+        default: false,
+      },
+      label: {
+        type: String,
+        default: '',
+      },
+      large_url: {
+        type: String,
+        default: '',
+      },
+      medium_url: {
+        type: String,
+        default: '',
+      },
+      small_url: {
+        type: String,
+        default: '',
+      },
+      thumbnail_url: {
+        type: String,
+        default: '',
+      },
     },
   ],
   list_price: {
