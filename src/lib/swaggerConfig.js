@@ -14,6 +14,10 @@ const options = {
         url: 'http://localhost:5000/api',
         description: 'Local server',
       },
+      {
+        url: 'https://tiki-webapp-backend.onrender.com/api',
+        description: 'Production server',
+      },
     ],
   },
   // Path to your API route files (where Swagger comments will go)
