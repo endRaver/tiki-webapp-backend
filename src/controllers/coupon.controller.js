@@ -12,8 +12,8 @@ export const getCoupon = async (req, res) => {
 
 export const validateCoupon = async (req, res) => {
   try {
-    const { couponId } = req.body;
-    const coupon = await Coupon.findOne({ _id: couponId, userId: req.user._id, isActive: true });
+    const { couponCode } = req.body;
+    const coupon = await Coupon.findOne({ code: couponCode, userId: req.user._id, isActive: true });
 
     if (!coupon) {
       return res.status(404).json({ message: 'Invalid coupon code' });
@@ -28,7 +28,11 @@ export const validateCoupon = async (req, res) => {
     res.json({
       message: 'Coupon is valid',
       code: coupon.code,
-      discountPercentage: coupon.discountPercentage
+      discount: coupon.discount,
+      discountType: coupon.discountType,
+      discountFor: coupon.discountFor,
+      maxDiscount: coupon.maxDiscount,
+      expirationDate: coupon.expirationDate,
     });
   } catch (error) {
     console.log("Error in validateCoupon controller", error.message);
