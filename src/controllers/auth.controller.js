@@ -17,17 +17,17 @@ const setCookies = (res, accessToken, refreshToken) => {
   const secure = process.env.NODE_ENV === "production";
 
   res.cookie("accessToken", accessToken, {
-    httpOnly: false, // Ensures secure handling, even in development
-    secure: false,         // true only in production
-    sameSite: "Lax",
+    httpOnly: true,
+    secure: secure,   
+    sameSite: "None",
     maxAge: 15 * 60 * 1000, // 15 minutes
-    path: '/'       // Ensure the cookie is available site-wide
+    path: '/'       
   });
 
   res.cookie("refreshToken", refreshToken, {
-    httpOnly: false,
-    secure: false,
-    sameSite: "Lax",
+    httpOnly: true,
+    secure: secure,   // Set to false for development
+    sameSite: "None",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     path: '/'
   });
