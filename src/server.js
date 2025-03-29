@@ -21,9 +21,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.NODE_ENV === "production" 
-    ? "your-production-frontend-url" 
-    : "http://localhost:5173",
+  origin: "http://localhost:5173",
   credentials: true,
 }));
 
