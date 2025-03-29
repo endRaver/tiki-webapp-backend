@@ -14,25 +14,19 @@ const storeRefreshToken = async (userId, refreshToken) => {
 }
 
 const setCookies = (res, accessToken, refreshToken) => {
-  const secure = process.env.NODE_ENV === "production";
-
   res.cookie("accessToken", accessToken, {
-    httpOnly: true,
-    secure: secure,   
-    sameSite: "None",
-    partitioned: true, 
-    maxAge: 15 * 60 * 1000, // 15 minutes
-    path: '/'       
-  });
+    httpOnly: true,   // prevent XSS attacks,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",   // prevent CSRF attacks, cross-site request forgery attacks
+    maxAge: 15 * 60 * 1000,   // 15 minutes
+  })
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: secure,   // Set to false for development
-    sameSite: "None",
-    partitioned: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    path: '/'
-  });
+  })
 }
 
 export const signup = async (req, res) => {
