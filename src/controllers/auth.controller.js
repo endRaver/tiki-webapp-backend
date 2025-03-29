@@ -14,23 +14,23 @@ const storeRefreshToken = async (userId, refreshToken) => {
 }
 
 const setCookies = (res, accessToken, refreshToken) => {
-  // const secure = process.env.NODE_ENV === "production" ? true : false;
-  const secure = false; // TODO: Change to true when deploying to production
-
+  const secure = process.env.NODE_ENV === "production";
 
   res.cookie("accessToken", accessToken, {
-    httpOnly: false,   // prevent XSS attacks, TODO: Change to true when deploying to production
-    secure,
-    sameSite: "lax",   // prevent CSRF attacks, cross-site request forgery attacks
-    maxAge: 15 * 60 * 1000,   // 15 minutes
-  })
+    httpOnly: false, // Ensures secure handling, even in development
+    secure: false,         // true only in production
+    sameSite: "Lax",
+    maxAge: 15 * 60 * 1000, // 15 minutes
+    path: '/'       // Ensure the cookie is available site-wide
+  });
 
   res.cookie("refreshToken", refreshToken, {
-    httpOnly: false, // TODO: Change to true when deploying to production
-    secure,
-    sameSite: "lax",
+    httpOnly: false,
+    secure: false,
+    sameSite: "Lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  })
+    path: '/'
+  });
 }
 
 export const signup = async (req, res) => {
