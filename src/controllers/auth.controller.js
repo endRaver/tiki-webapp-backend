@@ -17,17 +17,18 @@ const setCookies = (res, accessToken, refreshToken) => {
   // const secure = process.env.NODE_ENV === "production" ? true : false;
   const secure = false; // TODO: Change to true when deploying to production
 
+
   res.cookie("accessToken", accessToken, {
-    httpOnly: true,   // prevent XSS attacks,
+    httpOnly: false,   // prevent XSS attacks, TODO: Change to true when deploying to production
     secure,
-    sameSite: "strict",   // prevent CSRF attacks, cross-site request forgery attacks
+    sameSite: "lax",   // prevent CSRF attacks, cross-site request forgery attacks
     maxAge: 15 * 60 * 1000,   // 15 minutes
   })
 
   res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
+    httpOnly: false, // TODO: Change to true when deploying to production
     secure,
-    sameSite: "strict",
+    sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   })
 }
