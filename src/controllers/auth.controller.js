@@ -42,10 +42,6 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    if (userExists.authType === 'google') {
-      return res.status(400).json({ message: 'This account uses Google authentication. Please sign in with Google.' });
-    }
-
     const user = await User.create({ name, email, password });
 
     // authenticate user
@@ -59,6 +55,7 @@ export const signup = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      authType: user.authType,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
