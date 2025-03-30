@@ -1,6 +1,10 @@
+import axios from "axios";
+import dotenv from "dotenv";
 import { redis } from "../lib/redis.js";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken"
+
+dotenv.config();
 
 const generateTokens = (userId) => {
   const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
@@ -38,6 +42,10 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    if (userExists.authType === 'google') {
+      return res.status(400).json({ message: 'This account uses Google authentication. Please sign in with Google.' });
+    }
+
     const user = await User.create({ name, email, password });
 
     // authenticate user
@@ -64,6 +72,12 @@ export const login = async (req, res) => {
 
     if (user && (await user.comparePassword(password))) {
       const { accessToken, refreshToken } = generateTokens(user._id)
+
+      if (user.authType === 'google') {
+        return res.status(400).json({
+          message: "This account uses Google authentication. Please sign in with Google."
+        });
+      }
 
       await storeRefreshToken(user._id, refreshToken)
       setCookies(res, accessToken, refreshToken)
@@ -138,5 +152,43 @@ export const getProfile = async (req, res) => {
   } catch (error) {
     console.log('Error in get profile controller', error.message);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+}
+
+export const googleAuth = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    // Use the access token to get user info directly
+    const userInfoResponse = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const { email, name, sub: googleId } = userInfoResponse.data;
+
+    // Find or create user
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({ email, name, googleId, authType: 'google' });
+    }
+
+    // Generate tokens for the app
+    const { accessToken, refreshToken } = generateTokens(user._id);
+
+    // Store refresh token
+    await storeRefreshToken(user._id, refreshToken);
+    setCookies(res, accessToken, refreshToken);
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (error) {
+    console.error("Google auth error:", error.response?.data || error.message);
+    res.status(401).json({ error: "Authentication failed" });
   }
 }
