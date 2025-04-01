@@ -57,7 +57,7 @@
 
 /**
  * @swagger
- * /api/products:
+ * /products:
  *   post:
  *     summary: Create a new product
  *     tags: [Products]
@@ -93,6 +93,12 @@
  *                   type: string
  *                   format: binary
  *                 description: Product images (multiple files)
+ *               seller_price:
+ *                 type: number
+ *                 description: Seller price
+ *               seller_id:
+ *                 type: string
+ *                 description: Seller ID
  *     responses:
  *       201:
  *         description: Product created successfully
@@ -134,7 +140,8 @@
  *                 type: array
  *                 items:
  *                   type: string
- *                 description: List of author names
+ *                 description: List of author names (pass as JSON string)
+ *                 example: ["author1", "author2"]
  *               images:
  *                 type: array
  *                 items:

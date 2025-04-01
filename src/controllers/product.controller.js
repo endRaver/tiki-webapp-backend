@@ -1,7 +1,13 @@
+import fs from 'fs';
+
 import Product from "../models/product.model.js"
 import Seller from "../models/seller.model.js";
 
 import { uploadToCloudinary, deleteFromCloudinary } from "../services/cloudinaryService.js";
+
+const getTransformedUrl = (url, transformation) => {
+  return url.replace("/upload/", `/upload/${transformation}/`);
+};
 
 export const getAllProducts = async (req, res) => {
   try {
@@ -33,6 +39,7 @@ export const getAllProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
+    // Extract fields from the request body
     const {
       name,
       description,
@@ -40,90 +47,85 @@ export const createProduct = async (req, res) => {
       authors,
       short_description,
       price,
+      seller_price,
+      seller_id,
     } = req.body;
 
-    // Upload new image to Cloudinary
-    const imageFiles = req.files;
-    let imageFilesArray = Array.isArray(imageFiles)
-      ? imageFiles
-      : Object.values(imageFiles);
+    // Find the seller
+    const seller = await Seller.findById(seller_id);
+    if (!seller) {
+      return res.status(400).json({ message: "Seller not found" });
+    }
 
+    const formattedAuthors = authors ? authors.split(",") : [];
+
+    // Create authors array
+    let authorsArray = [];
+    if (formattedAuthors && Array.isArray(formattedAuthors)) {
+      for (const author of formattedAuthors) {
+        authorsArray.push({
+          name: author,
+          slug: author.toLowerCase().replace(/ /g, '-')
+        });
+      }
+    } else {
+      console.error("Authors must be an array of strings.");
+      return res.status(400).json({ message: "Authors must be an array of strings." });
+    }
+
+    // Handle file uploads
     let imageUrls = [];
-    if (imageFilesArray.length > 0) {
-      for (const imageFile of imageFilesArray) {
-        if (!imageFile?.data) {
-          console.error("Invalid file:", imageFile);
-          continue;
-        }
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
         try {
           const imageUrl = await uploadToCloudinary(
-            imageFile,
+            file.path,
             "Ecommerce-Store/products"
           );
           imageUrls.push(imageUrl);
+
+          // Delete the temporary file after upload
+          fs.unlinkSync(file.path);
         } catch (error) {
           console.error("Error uploading file:", error);
         }
       }
-    } else {
-      console.log(
-        "No image files uploaded or files are not in the expected format."
-      );
     }
 
     const images = imageUrls.map((imageUrl) => ({
       base_url: imageUrl,
-      is_gallery: true,
-      label: '',
-      large_url: imageUrl,
-      medium_url: imageUrl,
-      small_url: imageUrl,
-      thumbnail_url: imageUrl,
+      large_url: getTransformedUrl(imageUrl, "w_1200,h_1200,c_fill"),
+      medium_url: getTransformedUrl(imageUrl, "w_600,h_600,c_fill"),
+      small_url: getTransformedUrl(imageUrl, "w_300,h_300,c_fill"),
+      thumbnail_url: getTransformedUrl(imageUrl, "w_150,h_150,c_fill"),
     }));
-
-    // Create authors array
-    let authorsArray = [];
-    for (const author of authors) {
-      authorsArray.push({
-        name: author,
-        slug: author.toLowerCase().replace(/ /g, '-')
-      });
-    }
 
     // Create the product object matching the schema
     const productData = {
-      name,
-      description,
-      short_description,
-      original_price: price,
-      list_price: price,
-      authors: authorsArray || [], // If authors is provided, use it, otherwise empty array
+      name: name || '',
+      description: description || '',
+      short_description: short_description || '',
+      original_price: parseFloat(price) || 0,
+      list_price: parseFloat(price) || 0,
+      authors: authorsArray,
       categories: {
-        name: category,
+        name: category || '',
         is_leaf: false
       },
       current_seller: {
-        sku: '',
-        name: '',
-        price: 0,
-        link: '',
-        logo: '',
-        product_id: '',
-        store_id: 0,
-        is_best_store: false,
-        is_offline_installment_supported: false
+        seller: seller._id,
+        price: parseFloat(seller_price) || 0,
       },
       images: images,
     };
 
     const product = await Product.create(productData);
-
     res.status(201).json({ message: 'Product created successfully', product });
   } catch (error) {
     console.log("Error in createProduct controller", error.message);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
-}
+};
 
 export const updateProduct = async (req, res) => {
   try {

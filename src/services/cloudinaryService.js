@@ -1,4 +1,6 @@
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "../lib/cloudinary.js";
+import fs from "fs";
+
 const extractPublicIdFromUrl = (url) => {
   // Use regex to extract the public ID from the URL
   const regex = /\/upload\/(?:v\d+\/)?([^\.]+)\./; // Matches '/upload/v1738082876/n7wxyzxpg85x5sb2i7x4.webp'
@@ -6,9 +8,18 @@ const extractPublicIdFromUrl = (url) => {
   return match ? match[1] : null;
 };
 
-export const uploadToCloudinary = async (file, folder) => {
+export const uploadToCloudinary = async (filePath, folder) => {
   try {
-    const result = await cloudinary.uploader.upload(file.tempFilePath, {
+    // Make sure the file exists
+    if (!fs.existsSync(filePath)) {
+      throw new Error("File not found");
+    }
+
+    // Read the file as a buffer
+    fs.readFileSync(filePath);
+
+    // Upload the file to Cloudinary using buffer upload
+    const result = await cloudinary.uploader.upload(filePath, {
       resource_type: "auto",
       folder: folder,
     });

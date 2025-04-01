@@ -53,10 +53,10 @@
  *             properties:
  *               email:
  *                 type: string
- *                 example: "test@example.com"
+ *                 example: "admin@gmail.com"
  *               password:
  *                 type: string
- *                 example: "password123"
+ *                 example: "test123"
  *     responses:
  *       200:
  *         description: User logged in successfully
