@@ -1,30 +1,16 @@
 import mongoose from 'mongoose';
 
 const sellerSchema = new mongoose.Schema({
-  sku: {
-    type: String,
-    required: true,
-    default: '',
-  },
   name: {
     type: String,
     required: true,
     default: '',
-  },
-  price: {
-    type: Number,
-    required: true,
-    min: 0,
   },
   link: {
     type: String,
     default: '',
   },
   logo: {
-    type: String,
-    default: '',
-  },
-  product_id: {
     type: String,
     default: '',
   },

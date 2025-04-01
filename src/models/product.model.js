@@ -23,8 +23,23 @@ const productSchema = new mongoose.Schema({
     },
   },
   current_seller: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Seller',
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Seller',
+    },
+    product_id: {
+      type: String,
+      default: () => Math.floor(1000000 + Math.random() * 9000000).toString(),
+    },
+    sku: {
+      type: String,
+      default: () => Math.floor(1000000000000 + Math.random() * 9000000000000).toString(),
+    },
+    price: {
+      type: Number,
+      min: 0,
+      required: [true, "Price is required"],
+    },
   },
   description: {
     type: String,

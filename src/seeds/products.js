@@ -5,6 +5,7 @@ import { config } from "dotenv";
 
 import products from "./fakeData.js";
 import sellers from "./fakeSeller.js";
+import prices from "./fakeSellerPrice.js";
 
 config();
 
@@ -22,7 +23,10 @@ const seedProducts = async () => {
     // Then, create products with seller references
     const productsWithSellers = products.map((product, index) => ({
       ...product,
-      current_seller: createdSellers[index]._id,
+      current_seller: {
+        seller: createdSellers[index]._id,
+        price: prices[index],
+      },
     }));
 
     // Insert products
