@@ -8,7 +8,7 @@
 
 /**
  * @swagger
- * /cart:
+ * /carts:
  *   get:
  *     summary: Get all products in the cart
  *     tags: [Cart]

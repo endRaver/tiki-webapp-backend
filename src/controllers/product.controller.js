@@ -1,10 +1,12 @@
 import Product from "../models/product.model.js"
+import Seller from "../models/seller.model.js";
+
 import { uploadToCloudinary, deleteFromCloudinary } from "../services/cloudinaryService.js";
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
-    res.status(200).json({ products });
+    const productsWithSellers = await Product.find({}).populate('current_seller');
+    res.status(200).json({ products: productsWithSellers });
 
   } catch (error) {
     console.log("Error in getAllProducts controller", error.message);

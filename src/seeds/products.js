@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import Product from "../models/product.model.js";
+import Seller from "../models/seller.model.js";
 import { config } from "dotenv";
 
 import products from "./fakeData.js";
-
-console.log(products);
+import sellers from "./fakeSeller.js";
 
 config();
 
@@ -12,15 +12,25 @@ const seedProducts = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
 
-    // Clear existing Products
+    // Clear existing data
     await Product.deleteMany({});
+    await Seller.deleteMany({});
 
-    // Insert new Products
-    await Product.insertMany(products);
+    // Create sellers
+    const createdSellers = await Seller.insertMany(sellers);
 
-    console.log("Products seeded successfully!");
+    // Then, create products with seller references
+    const productsWithSellers = products.map((product, index) => ({
+      ...product,
+      current_seller: createdSellers[index]._id,
+    }));
+
+    // Insert products
+    await Product.insertMany(productsWithSellers);
+
+    console.log("Products and sellers seeded successfully!");
   } catch (error) {
-    console.error("Error seeding songs:", error);
+    console.error("Error seeding data:", error);
   } finally {
     mongoose.connection.close();
   }

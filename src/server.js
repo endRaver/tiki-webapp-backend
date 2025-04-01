@@ -10,7 +10,7 @@ import productRoutes from "./routes/product.route.js";
 import cartRoutes from "./routes/cart.route.js";
 import couponRoutes from "./routes/coupon.route.js";
 import paymentRoutes from "./routes/payment.route.js";
-
+import sellerRoutes from "./routes/seller.route.js";
 import { connectDB } from "./lib/db.js";
 
 dotenv.config();
@@ -27,9 +27,10 @@ app.use(cors({
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/cart", cartRoutes);
+app.use("/api/carts", cartRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/sellers", sellerRoutes);
 
 setupSwagger(app);
 

@@ -23,45 +23,8 @@ const productSchema = new mongoose.Schema({
     },
   },
   current_seller: {
-    sku: {
-      type: String,
-      required: true,
-      default: '',
-    },
-    name: {
-      type: String,
-      required: true,
-      default: '',
-    },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    link: {
-      type: String,
-      default: '',
-    },
-    logo: {
-      type: String,
-      default: '',
-    },
-    product_id: {
-      type: String,
-      default: '',
-    },
-    store_id: {
-      type: Number,
-      default: 0,
-    },
-    is_best_store: {
-      type: Boolean,
-      default: false,
-    },
-    is_offline_installment_supported: {
-      type: Boolean,
-      default: false,
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Seller',
   },
   description: {
     type: String,
@@ -81,6 +44,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         default: '',
       },
+      position: {
+        type: String,
+        default: null,
+      },
       large_url: {
         type: String,
         default: '',
@@ -99,11 +66,6 @@ const productSchema = new mongoose.Schema({
       },
     },
   ],
-  list_price: {
-    type: Number,
-    required: [true, "List price is required"],
-    min: 0,
-  },
   name: {
     type: String,
     required: [true, "Product name is required"],
@@ -132,30 +94,6 @@ const productSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
-  specifications: [
-    {
-      name: {
-        type: String,
-        default: 'Thông tin chung',
-      },
-      attributes: [
-        {
-          code: {
-            type: String,
-            default: '',
-          },
-          name: {
-            type: String,
-            default: '',
-          },
-          value: {
-            type: String,
-            default: '',
-          },
-        }
-      ],
-    }
-  ],
 }, { timestamps: true });
 
 const Product = mongoose.model("Product", productSchema);
