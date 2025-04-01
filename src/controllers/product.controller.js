@@ -39,7 +39,6 @@ export const getAllProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    // Extract fields from the request body
     const {
       name,
       description,
@@ -47,18 +46,16 @@ export const createProduct = async (req, res) => {
       authors,
       short_description,
       price,
-      seller_price,
       seller_id,
+      seller_price,
     } = req.body;
 
-    // Find the seller
     const seller = await Seller.findById(seller_id);
     if (!seller) {
       return res.status(400).json({ message: "Seller not found" });
     }
 
     const formattedAuthors = authors ? authors.split(",") : [];
-
     // Create authors array
     let authorsArray = [];
     if (formattedAuthors && Array.isArray(formattedAuthors)) {
@@ -73,22 +70,24 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ message: "Authors must be an array of strings." });
     }
 
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No image file uploaded" });
+    }
+
     // Handle file uploads
     let imageUrls = [];
-    if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
-        try {
-          const imageUrl = await uploadToCloudinary(
-            file.path,
-            "Ecommerce-Store/products"
-          );
-          imageUrls.push(imageUrl);
+    for (const file of req.files) {
+      try {
+        const imageUrl = await uploadToCloudinary(
+          file.path,
+          "Ecommerce-Store/products"
+        );
+        imageUrls.push(imageUrl);
 
-          // Delete the temporary file after upload
-          fs.unlinkSync(file.path);
-        } catch (error) {
-          console.error("Error uploading file:", error);
-        }
+        // Delete the temporary file after upload
+        fs.unlinkSync(file.path);
+      } catch (error) {
+        console.error("Error uploading file:", error);
       }
     }
 
@@ -130,70 +129,108 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    const { name, description, category, authors, short_description, price, images } = req.body;
+    const {
+      name,
+      description,
+      category,
+      authors,
+      short_description,
+      price,
+      seller_id,
+      seller_price,
+    } = req.body;
 
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    // Create authors array
-    let authorsArray = [];
-    for (const author of authors) {
-      authorsArray.push({
-        name: author,
-        slug: author.toLowerCase().replace(/ /g, '-')
-      });
+    // Initialize updateData object
+    const updateData = {};
+
+    // Only add fields to updateData if they are provided in the request
+    if (name) updateData.name = name;
+    if (description) updateData.description = description;
+    if (short_description) updateData.short_description = short_description;
+    if (price) {
+      updateData.original_price = parseFloat(price);
+      updateData.list_price = parseFloat(price);
     }
 
-    let imagesArray = [];
-    // Upload new image to Cloudinary
-    let imageFilesArray = Array.isArray(images)
-      ? images
-      : Object.values(images);
+    if (authors) {
+      const formattedAuthors = authors.split(",");
+      const authorsArray = formattedAuthors.map(author => ({
+        name: author,
+        slug: author.toLowerCase().replace(/ /g, '-')
+      }));
+      updateData.authors = authorsArray;
+    }
 
-    if (imageFilesArray.length > 0) {
-      for (const imageFile of imageFilesArray) {
-        if (!imageFile?.data) {
-          console.error("Invalid file:", imageFile);
-          continue;
+    if (category) {
+      updateData.categories = {
+        name: category,
+        is_leaf: false
+      };
+    }
+
+    if (seller_id) {
+      const seller = await Seller.findById(seller_id);
+      if (!seller) {
+        return res.status(400).json({ message: "Seller not found" });
+      }
+      updateData['current_seller.seller'] = seller._id;
+    }
+
+    if (seller_price) {
+      updateData['current_seller.price'] = parseFloat(seller_price);
+    }
+
+    // Handle images if provided
+    if (req.files && req.files.length > 0) {
+      // Delete old images from Cloudinary
+      if (product.images && product.images.length > 0) {
+        for (const image of product.images) {
+          try {
+            await deleteFromCloudinary(image.base_url);
+            console.log("Old image deleted from cloudinary");
+          } catch (error) {
+            console.log("Error in deleting old image from cloudinary", error.message);
+          }
         }
+      }
+
+      let imageUrls = [];
+      for (const file of req.files) {
         try {
           const imageUrl = await uploadToCloudinary(
-            imageFile,
+            file.path,
             "Ecommerce-Store/products"
           );
-          imagesArray.push(imageUrl);
+          imageUrls.push(imageUrl);
+          fs.unlinkSync(file.path);
         } catch (error) {
           console.error("Error uploading file:", error);
         }
       }
-    } else {
-      console.log(
-        "No image files uploaded or files are not in the expected format."
-      );
+
+      updateData.images = imageUrls.map((imageUrl) => ({
+        base_url: imageUrl,
+        large_url: getTransformedUrl(imageUrl, "w_1200,h_1200,c_fill"),
+        medium_url: getTransformedUrl(imageUrl, "w_600,h_600,c_fill"),
+        small_url: getTransformedUrl(imageUrl, "w_300,h_300,c_fill"),
+        thumbnail_url: getTransformedUrl(imageUrl, "w_150,h_150,c_fill"),
+      }));
     }
 
-    const imagesData = imagesArray.map((imageUrl) => ({
-      base_url: imageUrl,
-      is_gallery: true,
-      label: '',
-      large_url: imageUrl,
-      medium_url: imageUrl,
-      small_url: imageUrl,
-      thumbnail_url: imageUrl,
-    }));
-
-    const updateData = {
-      name,
-      description,
-      category,
-      authors: authorsArray,
-      short_description,
-      price,
-      images: imagesData
+    // Only proceed with update if there are fields to update
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: "No fields to update" });
     }
 
-    const updatedProduct = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true }
+    );
 
     res.status(200).json({ message: 'Product updated successfully', updatedProduct });
   } catch (error) {
@@ -213,7 +250,7 @@ export const deleteProduct = async (req, res) => {
     if (product.images) {
       for (const image of product.images) {
         try {
-          await deleteFromCloudinary(image);
+          await deleteFromCloudinary(image.base_url);
           console.log("Image deleted from cloudinary");
         } catch (error) {
           console.log("Error in deleting image from cloudinary", error.message);

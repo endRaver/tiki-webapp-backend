@@ -140,14 +140,21 @@
  *                 type: array
  *                 items:
  *                   type: string
- *                 description: List of author names (pass as JSON string)
- *                 example: ["author1", "author2"]
+ *                 description: List of author names
  *               images:
  *                 type: array
  *                 items:
  *                   type: string
  *                   format: binary
  *                 description: Product images (multiple files)
+ *               seller_price:
+ *                 type: number
+ *                 nullable: true  # Allow this field to be null
+ *                 description: Seller price
+ *               seller_id:
+ *                 type: string
+ *                 nullable: true  # Allow this field to be null
+ *                 description: Seller ID
  *     responses:
  *       200:
  *         description: Product updated successfully
