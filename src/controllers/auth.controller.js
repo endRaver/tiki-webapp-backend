@@ -81,7 +81,7 @@ export const signup = async (req, res) => {
 
     setCookies(res, accessToken, refreshToken);
 
-    // sendVerificationEmail(user.email, verificationToken);
+    // sendVerificationEmail(user.email, verificationToken);  // TODO: Uncomment when email verification is implemented
 
     res.status(201).json({
       success: true,
@@ -102,6 +102,10 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+
+    if (!user.isVerified) {
+      return res.status(400).json({ message: 'Please verify your email' });
+    }
 
     if (user && (await user.comparePassword(password))) {
       const { accessToken, refreshToken } = generateTokens(user._id)
@@ -312,11 +316,7 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
     }
 
-    // update password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    user.password = hashedPassword;
+    user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpiresAt = undefined;
     await user.save();
