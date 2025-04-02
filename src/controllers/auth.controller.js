@@ -1,8 +1,13 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import { redis } from "../lib/redis.js";
-import User from "../models/user.model.js";
 import jwt from "jsonwebtoken"
+import crypto from "crypto"
+import bcrypt from 'bcrypt';
+
+import User from "../models/user.model.js";
+
+import { redis } from "../lib/redis.js";
+import { sendResetPasswordEmail, sendResetSuccessEmail, sendVerificationEmail } from "../mailtrap/emails.js";
 
 dotenv.config();
 
@@ -33,16 +38,42 @@ const setCookies = (res, accessToken, refreshToken) => {
 }
 
 export const signup = async (req, res) => {
-  const { email, password, name } = req.body;
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
 
   try {
     const userExists = await User.findOne({ email });
 
-    if (userExists) {
+    if (userExists && userExists.isVerified) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const user = await User.create({ name, email, password });
+    if (userExists && !userExists.isVerified) {
+      if (userExists.authType === 'google') {
+        return res.status(400).json({ message: 'User already exists with Google' });
+      }
+
+      userExists.verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+      userExists.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
+      await userExists.save();
+
+      sendVerificationEmail(userExists.email, userExists.verificationToken);
+      return res.status(400).json({ message: 'User already exists, please verify your email' });
+    }
+
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const user = await User.create({
+      name: email.split('@')[0],
+      email,
+      password,
+      isVerified: true, // TODO: Remove when email verification is implemented
+      verificationToken,
+      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+    });
 
     // authenticate user
     const { accessToken, refreshToken } = generateTokens(user._id);
@@ -50,14 +81,19 @@ export const signup = async (req, res) => {
 
     setCookies(res, accessToken, refreshToken);
 
+    // sendVerificationEmail(user.email, verificationToken);
+
     res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      authType: user.authType,
+      success: true,
+      message: 'User created successfully, please verify your email',
+      user: {
+        ...user._doc,
+        password: undefined,
+        cartItems: undefined
+      }
     });
   } catch (error) {
+    console.log('Error in signup controller', error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -79,11 +115,17 @@ export const login = async (req, res) => {
       await storeRefreshToken(user._id, refreshToken)
       setCookies(res, accessToken, refreshToken)
 
+      user.lastLogin = new Date();
+      await user.save();
+
       res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
+        success: true,
+        message: "User logged in successfully",
+        user: {
+          ...user._doc,
+          password: undefined,
+          cartItems: undefined
+        }
       })
     } else {
       res.status(401).json({ message: "Invalid email or password" })
@@ -187,5 +229,103 @@ export const googleAuth = async (req, res) => {
   } catch (error) {
     console.error("Google auth error:", error.response?.data || error.message);
     res.status(401).json({ error: "Authentication failed" });
+  }
+}
+
+export const verifyEmail = async (req, res) => {
+  const { code } = req.body;
+
+  try {
+    const user = await User.findOne({
+      verificationToken: code,
+      verificationTokenExpiresAt: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Email verified successfully', user: {
+        ...user._doc,
+        password: undefined,
+      },
+    });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'User not found' });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpiresAt = resetTokenExpiresAt;
+    await user.save();
+
+    await sendResetPasswordEmail(
+      user.email,
+      `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Reset password email sent successfully',
+    });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+export const resetPassword = async (req, res) => {
+
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpiresAt: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
+    }
+
+    // update password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpiresAt = undefined;
+    await user.save();
+
+    await sendResetSuccessEmail(user.email);
+
+    return res.status(200).json({ success: true, message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 }
