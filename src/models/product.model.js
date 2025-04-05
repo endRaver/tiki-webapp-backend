@@ -109,6 +109,26 @@ const productSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  specifications: [{
+    name: {
+      type: String,
+      default: 'Thông tin chung'
+    },
+    attributes: [{
+      code: {
+        type: String,
+        default: ''
+      },
+      name: {
+        type: String,
+        default: ''
+      },
+      value: {
+        type: String,
+        default: ''
+      }
+    }]
+  }],
 }, { timestamps: true });
 
 const Product = mongoose.model("Product", productSchema);

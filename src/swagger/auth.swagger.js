@@ -22,18 +22,44 @@
  *             properties:
  *               email:
  *                 type: string
- *                 example: "test@example.com"
+ *                 example: "saltypeesh115@gmail.com"
  *               password:
  *                 type: string
- *                 example: "password123"
+ *                 example: "test123"
  *               name:
  *                 type: string
- *                 example: "John Doe"
+ *                 example: "Login Test"
  *     responses:
  *       201:
  *         description: User created successfully
  *       400:
  *         description: User already exists
+ *       500:
+ *         description: Server error
+ */
+
+
+/**
+ * @swagger
+ * /auth/verify-email:
+ *   post:
+ *     summary: Verify email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               code:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Email verified successfully
+ *       400:
+ *         description: Invalid verification code
  *       500:
  *         description: Server error
  */
@@ -53,7 +79,7 @@
  *             properties:
  *               email:
  *                 type: string
- *                 example: "admin@gmail.com"
+ *                 example: "saltypeesh115@gmail.com"
  *               password:
  *                 type: string
  *                 example: "test123"
@@ -81,15 +107,56 @@
 
 /**
  * @swagger
- * /auth/refresh-token:
+ * /auth/forgot-password:
  *   post:
- *     summary: Refresh access token
+ *     summary: Forgot password
  *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "saltypeesh115@gmail.com"
  *     responses:
- *       200:
- *         description: Access token refreshed successfully
- *       401:
- *         description: No refresh token provided or invalid refresh token
+ *       200: 
+ *         description: Password reset email sent successfully
+ *       400:
+ *         description: User not found
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * /auth/reset-password/{token}:
+ *   post:
+ *     summary: Reset password
+ *     tags: [Auth]
+ *     parameters:
+ *       - name: token
+ *         in: path
+ *         required: true
+ *         type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 example: "test456"
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *       400:
+ *         description: Invalid token
+ *       500:
+ *         description: Server error
+ */
+

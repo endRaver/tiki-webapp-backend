@@ -41,27 +41,28 @@ export const signup = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ message: 'All fields are required' });
+    return res.status(400).json({ message: 'Tất cả các trường là bắt buộc' });
   }
 
   try {
     const userExists = await User.findOne({ email });
 
     if (userExists && userExists.isVerified) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'Tài khoản đã tồn tại' });
     }
 
     if (userExists && !userExists.isVerified) {
       if (userExists.authType === 'google') {
-        return res.status(400).json({ message: 'User already exists with Google' });
+        return res.status(400).json({ message: 'Tài khoản đã tồn tại với Google' });
       }
 
       userExists.verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
       userExists.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
       await userExists.save();
 
-      sendVerificationEmail(userExists.email, userExists.verificationToken);
-      return res.status(400).json({ message: 'User already exists, please verify your email' });
+      sendVerificationEmail(userExists.email, userExists.verificationToken);  // TODO: Remove when email verification is implemented
+
+      return res.status(400).json({ message: 'Tài khoản đã tồn tại, vui lòng xác thực email' });
     }
 
     const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
@@ -81,11 +82,11 @@ export const signup = async (req, res) => {
 
     setCookies(res, accessToken, refreshToken);
 
-    // sendVerificationEmail(user.email, verificationToken);  // TODO: Uncomment when email verification is implemented
+    sendVerificationEmail(user.email, verificationToken);  // TODO: Uncomment when email verification is implemented
 
     res.status(201).json({
       success: true,
-      message: 'User created successfully, please verify your email',
+      message: 'Tài khoản đã được tạo thành công, vui lòng xác thực email',
       user: {
         ...user._doc,
         password: undefined,
@@ -103,16 +104,12 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
-    if (!user.isVerified) {
-      return res.status(400).json({ message: 'Please verify your email' });
-    }
-
     if (user && (await user.comparePassword(password))) {
       const { accessToken, refreshToken } = generateTokens(user._id)
 
       if (user.authType === 'google') {
         return res.status(400).json({
-          message: "This account uses Google authentication. Please sign in with Google."
+          message: "Tài khoản này sử dụng xác thực Google. Vui lòng đăng nhập bằng Google."
         });
       }
 
@@ -124,7 +121,7 @@ export const login = async (req, res) => {
 
       res.json({
         success: true,
-        message: "User logged in successfully",
+        message: "Đăng nhập thành công",
         user: {
           ...user._doc,
           password: undefined,
@@ -132,8 +129,13 @@ export const login = async (req, res) => {
         }
       })
     } else {
-      res.status(401).json({ message: "Invalid email or password" })
+      return res.status(401).json({ message: "Email hoặc mật khẩu không hợp lệ" })
     }
+
+    if (!user.isVerified) {
+      return res.status(400).json({ message: 'Vui lòng xác thực email của bạn' });
+    }
+
   } catch (error) {
     console.log('Error in login controller', error.message);
     res.status(500).json({ message: error.message });
@@ -150,7 +152,7 @@ export const logout = async (req, res) => {
 
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
-    res.status(200).json({ message: "Logged out successfully" });
+    res.status(200).json({ message: "Đăng xuất thành công" });
   } catch (error) {
     console.log('Error in logout controller', error.message);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -163,14 +165,14 @@ export const refreshToken = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      return res.status(401).json({ message: 'No refresh token provided' })
+      return res.status(401).json({ message: 'Không có token xác thực được cung cấp' })
     }
 
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     const storedToken = await redis.get(`refresh_token:${decoded.userId}`);
 
     if (storedToken !== refreshToken) {
-      return res.status(401).json({ message: 'Invalid refresh token' })
+      return res.status(401).json({ message: 'Token xác thực không hợp lệ' })
     }
 
     const accessToken = jwt.sign({ userId: decoded.userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
@@ -182,7 +184,7 @@ export const refreshToken = async (req, res) => {
       maxAge: 15 * 60 * 1000,
     })
 
-    res.json({ message: "Access token refreshed successfully" })
+    res.json({ message: "Token truy cập đã được cập nhật thành công" })
   } catch (error) {
     console.log('Error in refresh token controller', error.message);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -213,8 +215,13 @@ export const googleAuth = async (req, res) => {
 
     // Find or create user
     let user = await User.findOne({ email });
+
     if (!user) {
-      user = await User.create({ email, name, googleId, authType: 'google' });
+      user = await User.create({ email, name, googleId, authType: 'google', isVerified: true, });
+    }
+
+    if (user.authType === 'local') {
+      return res.status(400).json({ message: 'Tài khoản đã tồn tại với email' });
     }
 
     // Generate tokens for the app
@@ -229,10 +236,11 @@ export const googleAuth = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      isVerified: user.isVerified,
     });
   } catch (error) {
     console.error("Google auth error:", error.response?.data || error.message);
-    res.status(401).json({ error: "Authentication failed" });
+    res.status(401).json({ error: "Xác thực thất bại" });
   }
 }
 
@@ -267,7 +275,6 @@ export const verifyEmail = async (req, res) => {
   }
 }
 
-
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -275,7 +282,15 @@ export const forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ success: false, message: 'User not found' });
+      return res.status(400).json({ success: false, message: 'Tài khoản không tồn tại' });
+    }
+
+    if (!user.isVerified) {
+      return res.status(400).json({ success: false, message: 'Tài khoản chưa được xác thực' });
+    }
+
+    if (user.authType === 'google') {
+      return res.status(400).json({ success: false, message: 'Tài khoản này sử dụng xác thực Google. Vui lòng đăng nhập bằng Google.' });
     }
 
     // Generate reset token
@@ -293,7 +308,7 @@ export const forgotPassword = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Reset password email sent successfully',
+      message: 'Email đặt lại mật khẩu đã được gửi đến tài khoản của bạn',
     });
 
   } catch (error) {
@@ -311,6 +326,8 @@ export const resetPassword = async (req, res) => {
       resetPasswordToken: token,
       resetPasswordExpiresAt: { $gt: Date.now() },
     });
+
+    console.log('user', token);
 
     if (!user) {
       return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
