@@ -71,7 +71,7 @@ export const signup = async (req, res) => {
       name: email.split('@')[0],
       email,
       password,
-      isVerified: true, // TODO: Remove when email verification is implemented
+      // isVerified: true, // TODO: Remove when email verification is implemented
       verificationToken,
       verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
     });
@@ -104,6 +104,10 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
+    if (!user.isVerified) {
+      return res.status(400).json({ message: 'Vui lòng xác thực email của bạn' });
+    }
+
     if (user && (await user.comparePassword(password))) {
       const { accessToken, refreshToken } = generateTokens(user._id)
 
@@ -132,9 +136,6 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Email hoặc mật khẩu không hợp lệ" })
     }
 
-    if (!user.isVerified) {
-      return res.status(400).json({ message: 'Vui lòng xác thực email của bạn' });
-    }
 
   } catch (error) {
     console.log('Error in login controller', error.message);
@@ -254,7 +255,7 @@ export const verifyEmail = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
+      return res.status(400).json({ success: false, message: "Mã xác thực không hợp lệ hoặc đã hết hạn" });
     }
 
     user.isVerified = true;
@@ -264,7 +265,8 @@ export const verifyEmail = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Email verified successfully', user: {
+      message: 'Email đã được xác thực thành công',
+      user: {
         ...user._doc,
         password: undefined,
       },

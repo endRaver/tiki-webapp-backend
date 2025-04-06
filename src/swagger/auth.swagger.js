@@ -22,13 +22,10 @@
  *             properties:
  *               email:
  *                 type: string
- *                 example: "saltypeesh115@gmail.com"
+ *                 example: "admin@gmail.com"
  *               password:
  *                 type: string
  *                 example: "test123"
- *               name:
- *                 type: string
- *                 example: "Login Test"
  *     responses:
  *       201:
  *         description: User created successfully

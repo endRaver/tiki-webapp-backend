@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getAllProducts,
+  getProductById,
   getProductsByCategory,
   getRecommendedProducts,
   createProduct,
@@ -12,10 +13,17 @@ import { upload } from "../lib/multer.js";
 const router = express.Router();
 
 router.get('/', getAllProducts);
+router.get('/:id', getProductById);
 router.get('/category/:category', getProductsByCategory);
 router.get('/recommendations', getRecommendedProducts);
-router.post('/', protectedRoute, adminRoute, upload.array('images'), createProduct);
-router.put('/:id', protectedRoute, adminRoute, upload.array('images'), updateProduct);
+router.post('/',
+  protectedRoute,
+  adminRoute,
+  upload.array('images'), createProduct);
+router.put('/:id',
+  protectedRoute,
+  adminRoute,
+  upload.array('images'), updateProduct);
 router.delete('/:id', protectedRoute, adminRoute, deleteProduct);
 
 

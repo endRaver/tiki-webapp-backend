@@ -99,6 +99,24 @@
  *               seller_id:
  *                 type: string
  *                 description: Seller ID
+ *               specifications:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     attributes:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           code:
+ *                             type: string
+ *                           name:
+ *                             type: string
+ *                           value:
+ *                             type: string
  *     responses:
  *       201:
  *         description: Product created successfully
@@ -155,6 +173,24 @@
  *                 type: string
  *                 nullable: true  # Allow this field to be null
  *                 description: Seller ID
+ *               specifications:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     attributes:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           code:
+ *                             type: string
+ *                           name:
+ *                             type: string
+ *                           value:
+ *                             type: string
  *     responses:
  *       200:
  *         description: Product updated successfully

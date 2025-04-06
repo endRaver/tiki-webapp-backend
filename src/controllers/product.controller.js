@@ -37,6 +37,12 @@ export const getAllProducts = async (req, res) => {
   }
 }
 
+export const getProductById = async (req, res) => {
+  const { id } = req.params;
+  const product = await Product.findById(id);
+  res.status(200).json(product);
+}
+
 export const createProduct = async (req, res) => {
   try {
     const {
@@ -48,6 +54,7 @@ export const createProduct = async (req, res) => {
       price,
       seller_id,
       seller_price,
+      specifications,
     } = req.body;
 
     const seller = await Seller.findById(seller_id);
@@ -69,6 +76,7 @@ export const createProduct = async (req, res) => {
       console.error("Authors must be an array of strings.");
       return res.status(400).json({ message: "Authors must be an array of strings." });
     }
+
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: "No image file uploaded" });
@@ -99,6 +107,41 @@ export const createProduct = async (req, res) => {
       thumbnail_url: getTransformedUrl(imageUrl, "w_150,h_150,c_fill"),
     }));
 
+    console.log("specifications", specifications);
+
+    // Format specifications if provided
+    let formattedSpecifications = [];
+    if (specifications) {
+      try {
+        // Parse if it's a string, otherwise use as is
+        let specsData = specifications;
+
+        if (typeof specifications === 'string') {
+          specsData = JSON.parse(specifications);
+        }
+
+        // Now handle the specifications data
+        if (Array.isArray(specsData)) {
+          formattedSpecifications = specsData.map(spec => ({
+            name: spec.name || 'Thông tin chung',
+            attributes: Array.isArray(spec.attributes) ? spec.attributes.map(attr => ({
+              code: attr.code || '',
+              name: attr.name || '',
+              value: attr.value || ''
+            })) : []
+          }));
+        } else {
+          console.error("Specifications must be an array");
+        }
+      } catch (error) {
+        console.error("Error processing specifications:", error);
+        return res.status(400).json({
+          message: "Error processing specifications. Please ensure it's a valid format.",
+          error: error.message
+        });
+      }
+    }
+
     // Create the product object matching the schema
     const productData = {
       name: name || '',
@@ -116,6 +159,7 @@ export const createProduct = async (req, res) => {
         price: parseFloat(seller_price) || 0,
       },
       images: images,
+      specifications: formattedSpecifications,
     };
 
     const product = await Product.create(productData);
@@ -138,6 +182,7 @@ export const updateProduct = async (req, res) => {
       price,
       seller_id,
       seller_price,
+      specifications,
     } = req.body;
 
     if (!product) {
@@ -219,6 +264,10 @@ export const updateProduct = async (req, res) => {
         small_url: getTransformedUrl(imageUrl, "w_300,h_300,c_fill"),
         thumbnail_url: getTransformedUrl(imageUrl, "w_150,h_150,c_fill"),
       }));
+    }
+
+    if (specifications) {
+      updateData.specifications = specifications;
     }
 
     // Only proceed with update if there are fields to update
