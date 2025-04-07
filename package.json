@@ -7,6 +7,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed:products": "node src/seeds/products.js",
+    "seed:coupons": "node src/seeds/coupons.js",
     "build": "npm install"
   },
   "keywords": [],

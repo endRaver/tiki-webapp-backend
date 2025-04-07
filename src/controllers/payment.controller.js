@@ -4,19 +4,22 @@ import Order from "../models/order.model.js";
 
 export const createCheckoutSession = async (req, res) => {
   try {
-    const { products, couponCode } = req.body;
-
+    const { products, couponCodes } = req.body;
+    console.log('couponCodes', couponCodes);
     if (!Array.isArray(products) || products.length === 0) {
       return res.status(400).json({ message: "Invalid or empty products array" });
     }
 
     let totalAmount = 0;
+    let totalDiscount = 0;
 
     // Calculate total amount for all products
     const lineItems = products.map(product => {
-      const amount = Math.round(product.price);
-      totalAmount += amount * product.quantity;
-
+      const amount = Math.round(Number(product.original_price));
+      if (isNaN(amount)) {
+        throw new Error(`Invalid price for product: ${product.name}`);
+      }
+      totalAmount += amount * (product.quantity || 1);
       return {
         price_data: {
           currency: 'vnd',
@@ -30,74 +33,107 @@ export const createCheckoutSession = async (req, res) => {
       }
     });
 
-    // Check if coupon is valid and apply discount
-    let coupon = null;
-    if (couponCode) {
-      coupon = await Coupon.findOne({ code: couponCode, userId: req.user._id, isActive: true });
-      if (coupon) {
-        if (coupon.discountType === 'percentage') {
-          const discountAmount = Math.round(totalAmount * (coupon.discount / 100));
-          if (discountAmount > coupon.maxDiscount) {
-            totalAmount -= coupon.maxDiscount;
+    // Process all coupons and calculate combined discount
+    if (Array.isArray(couponCodes) && couponCodes.length > 0) {
+      for (const couponCode of couponCodes) {
+        const coupon = await Coupon.findOne({
+          code: couponCode,
+          userId: "67f06ec04b967d17645c0223",
+          isActive: true
+        });
+
+        if (coupon) {
+          // Calculate discount amount
+          if (coupon.discountType === 'percentage') {
+            const discountAmount = Math.round(totalAmount * (coupon.discount / 100));
+            totalDiscount += discountAmount > coupon.maxDiscount ? coupon.maxDiscount : discountAmount;
           } else {
-            totalAmount -= discountAmount;
+            totalDiscount += coupon.discount;
           }
-        } else {
-          totalAmount -= coupon.discount;
         }
       }
     }
 
-    // Create checkout session
+    // Create a single combined coupon if there's a discount
+    let stripeCouponId = null;
+    if (totalDiscount > 0) {
+      stripeCouponId = await createStripeCoupon(totalDiscount);
+    }
+
+    // Ensure totalAmount is valid after discounts
+    const finalAmount = totalAmount - totalDiscount;
+    if (isNaN(finalAmount) || finalAmount <= 0) {
+      return res.status(400).json({ message: "Invalid total amount after discounts" });
+    }
+
+    // Create checkout session with at most one coupon
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
+      currency: 'vnd',
       success_url: `${process.env.CLIENT_URL}/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/purchase-cancel`,
-      discounts: coupon
-        ? [
-          {
-            coupon: await createStripeCoupon(
-              coupon.discount,
-              coupon.discountType
-            )
-          }
-        ] : [],
+      cancel_url: `${process.env.CLIENT_URL}/checkout`,
+      discounts: stripeCouponId ? [{ coupon: stripeCouponId }] : [],
       metadata: {
-        userId: req.user._id.toString(),
-        couponCode: couponCode || "",
+        userId: "67f06ec04b967d17645c0223",
+        couponCodes: JSON.stringify(couponCodes || []),
         products: JSON.stringify(
-          products.map(product => ({
+          products.map((product) => ({
             id: product._id,
             quantity: product.quantity,
-            price: product.price,
+            price: product.original_price,
           }))
         ),
+        totalDiscount: totalDiscount.toString()
       }
     });
 
-    // // Create new coupon if total amount is >= 200$
-    // if (totalAmount >= 20000) {
-    //   await createNewCoupon(req.user._id);
-    // }
-
-    // Send response with session ID and total amount
-    res.status(200).json({ id: session.id, totalAmount: totalAmount });
+    // Send response with session ID and amounts
+    res.status(200).json({
+      id: session.id,
+      totalAmount: finalAmount,
+      originalAmount: totalAmount,
+      discount: totalDiscount,
+      url: session.url
+    });
   } catch (error) {
     console.error("Error creating checkout session:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res.status(500).json({
+      message: "Internal server error",
+      error: error.message
+    });
   }
 }
 
 // Create Stripe coupon
-async function createStripeCoupon(discount, discountType) {
-  const coupon = await stripe.coupons.create({
-    percent_off: discountType === 'percentage' ? discount : null,
-    amount_off: discountType === 'amount' ? discount : null,
-    duration: 'once',
-  });
-  return coupon.id
+async function createStripeCoupon(discount) {
+  try {
+    // Validate inputs
+    if (!discount || isNaN(discount)) {
+      throw new Error('Invalid discount value');
+    }
+
+    // Convert discount to appropriate format for Stripe
+    let couponData = {
+      duration: 'once',
+      currency: 'vnd',
+    };
+    // For fixed amount discounts (discountType === 'fixed' or 'amount')
+    const amountOff = Math.round(discount);
+    if (amountOff < 1) {
+      throw new Error('Amount discount must be greater than 0');
+    }
+    couponData.amount_off = amountOff;
+
+
+    console.log('Creating Stripe coupon with data:', couponData);
+    const coupon = await stripe.coupons.create(couponData);
+    return coupon.id;
+  } catch (error) {
+    console.error('Error creating Stripe coupon:', error);
+    throw error;
+  }
 }
 
 // Create new coupon

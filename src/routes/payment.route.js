@@ -4,8 +4,12 @@ import { createCheckoutSession, checkoutSuccess } from "../controllers/payment.c
 
 const router = express.Router();
 
-router.post('/create-checkout-session', protectedRoute, createCheckoutSession);
-router.post('/checkout-success', protectedRoute, checkoutSuccess);
+router.post('/create-checkout-session',
+  // protectedRoute,
+  createCheckoutSession);
+router.post('/checkout-success',
+  // protectedRoute,
+  checkoutSuccess);
 
 
 export default router;
