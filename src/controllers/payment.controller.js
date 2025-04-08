@@ -15,7 +15,7 @@ export const createCheckoutSession = async (req, res) => {
 
     // Calculate total amount for all products
     const lineItems = products.map(product => {
-      const amount = Math.round(Number(product.original_price));
+      const amount = Math.round(Number(product.current_seller.price));
       if (isNaN(amount)) {
         throw new Error(`Invalid price for product: ${product.name}`);
       }
@@ -82,7 +82,7 @@ export const createCheckoutSession = async (req, res) => {
           products.map((product) => ({
             id: product._id,
             quantity: product.quantity,
-            price: product.original_price,
+            price: product.current_seller.price,
           }))
         ),
         totalDiscount: totalDiscount.toString()
