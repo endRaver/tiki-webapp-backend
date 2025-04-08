@@ -5,9 +5,9 @@ import Coupon from '../models/coupon.model.js';
 dotenv.config();
 
 const userIds = [
-  "67f06ec04b967d17645c0223", // Replace with actual user IDs from your database
-  "67f06ec04b967d17645c0223",
-  "67f06ec04b967d17645c0223"
+  "67f1ed4d5f95b9c7b3d4794f", // Replace with actual user IDs from your database
+  "67f1ed4d5f95b9c7b3d4794f",
+  "67f1ed4d5f95b9c7b3d4794f"
 ];
 
 const couponData = [
@@ -18,6 +18,7 @@ const couponData = [
     maxDiscount: 50000,
     discountType: "percentage",
     discountFor: "product",
+    minOrderAmount: 100000,
     expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
     isActive: true,
     userId: userIds[0]
@@ -28,6 +29,7 @@ const couponData = [
     maxDiscount: 100000,
     discountType: "percentage",
     discountFor: "product",
+    minOrderAmount: 150000,
     expirationDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
     isActive: true,
     userId: userIds[1]
@@ -38,6 +40,7 @@ const couponData = [
     maxDiscount: 75000,
     discountType: "percentage",
     discountFor: "product",
+    minOrderAmount: 200000,
     expirationDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
     isActive: true,
     userId: userIds[2]
@@ -50,6 +53,7 @@ const couponData = [
     maxDiscount: 30000,
     discountType: "amount",
     discountFor: "shipping",
+    minOrderAmount: 100000,
     expirationDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
     isActive: true,
     userId: userIds[0]
@@ -60,6 +64,7 @@ const couponData = [
     maxDiscount: 50000,
     discountType: "amount",
     discountFor: "product",
+    minOrderAmount: 199000,
     expirationDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000), // 45 days from now
     isActive: true,
     userId: userIds[1]
@@ -70,6 +75,7 @@ const couponData = [
     maxDiscount: 100000,
     discountType: "amount",
     discountFor: "product",
+    minOrderAmount: 200000,
     expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
     isActive: true,
     userId: userIds[2]
@@ -82,6 +88,7 @@ const couponData = [
     maxDiscount: 50000,
     discountType: "percentage",
     discountFor: "product",
+    minOrderAmount: 100000,
     expirationDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
     isActive: false,
     userId: userIds[0]
@@ -92,6 +99,7 @@ const couponData = [
     maxDiscount: 20000,
     discountType: "amount",
     discountFor: "product",
+    minOrderAmount: 500000,
     expirationDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
     isActive: false,
     userId: userIds[1]
