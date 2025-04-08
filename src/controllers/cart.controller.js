@@ -3,11 +3,17 @@ import Product from '../models/product.model.js';
 export const getCartProducts = async (req, res) => {
   try {
     const products = await Product.find({ _id: { $in: req.user.cartItems } })
+      .populate('current_seller.seller')
 
     // add quantity to each product
     const cartItems = products.map(product => {
       const item = req.user.cartItems.find((cartItem) => cartItem.id === product.id);
-      return { ...product.toJSON(), quantity: item.quantity }
+      return {
+        ...product.toJSON(),
+        quantity: item.quantity,
+        shippingPrice: item.shippingPrice,
+        shippingDate: item.shippingDate
+      }
     })
 
     res.status(200).json(cartItems);

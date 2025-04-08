@@ -32,6 +32,18 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 1,
       },
+      shippingPrice: {
+        type: Number,
+        default: Math.floor(Math.random() * 31 + 20) * 1000 // 20k - 50k
+      },
+      shippingDate: {
+        type: Date,
+        default: () => {
+          const now = new Date();
+          const randomDays = Math.floor(Math.random() * 5) + 1; // 1-5 days
+          return new Date(now.getTime() + randomDays * 24 * 60 * 60 * 1000);
+        }
+      }
     },
   ],
   googleId: {

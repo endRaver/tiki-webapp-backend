@@ -16,21 +16,11 @@ export const getAllProducts = async (req, res) => {
       .lean(); // Convert Mongoose documents to plain JS objects
 
     const formattedProducts = productsWithSellers.map(product => {
-      if (product.current_seller && product.current_seller.seller) {
-        return {
-          ...product, // Spread all other fields
-          current_seller: {
-            ...product.current_seller.seller, // Move seller fields up
-            price: product.current_seller.price,
-            product_id: product.current_seller.product_id,
-            sku: product.current_seller.sku,
-          }
-        };
-      }
+
       return product;
     });
 
-    res.status(200).json({ products: formattedProducts });
+    res.status(200).json({ products: productsWithSellers });
   } catch (error) {
     console.log("Error in getAllProducts controller", error.message);
     res.status(500).json({ message: 'Server error', error: error.message });

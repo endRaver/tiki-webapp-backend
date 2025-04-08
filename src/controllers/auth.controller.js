@@ -12,7 +12,7 @@ import { sendResetPasswordEmail, sendResetSuccessEmail, sendVerificationEmail } 
 dotenv.config();
 
 const generateTokens = (userId) => {
-  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
+  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
   const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
 
   return { accessToken, refreshToken }
@@ -27,13 +27,13 @@ const setCookies = (res, accessToken, refreshToken) => {
     httpOnly: true,
     secure: true, // Set to true even in development when using https backend
     sameSite: "none", // Change from "strict" to "none" to allow cross-site cookies
-    maxAge: 15 * 60 * 1000,
+    maxAge: 60 * 60 * 1000, // 1 hour
   })
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: true, // Set to true even in development when using https backend
     sameSite: "none",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days  
   })
 }
 

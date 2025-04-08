@@ -21,7 +21,7 @@
 
 /**
  * @swagger
- * /cart:
+ * /carts:
  *   post:
  *     summary: Add a product to the cart
  *     tags: [Cart]
@@ -44,7 +44,7 @@
 
 /**
  * @swagger
- * /cart:
+ * /carts:
  *   delete:
  *     summary: Remove all items of a product from the cart
  *     tags: [Cart]
@@ -67,7 +67,7 @@
 
 /**
  * @swagger
- * /cart/{id}:
+ * /carts/{id}:
  *   put:
  *     summary: Update the quantity of a product in the cart
  *     tags: [Cart]
