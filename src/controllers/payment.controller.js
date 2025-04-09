@@ -4,11 +4,13 @@ import Order from "../models/order.model.js";
 
 export const createCheckoutSession = async (req, res) => {
   try {
-    const { products, couponCodes } = req.body;
-    console.log('couponCodes', couponCodes);
+    const { products, couponCodes, shippingCost } = req.body;
     if (!Array.isArray(products) || products.length === 0) {
       return res.status(400).json({ message: "Invalid or empty products array" });
     }
+
+    // Parse shipping cost to number
+    const parsedShippingCost = Number(shippingCost) || 0;
 
     let totalAmount = 0;
     let totalDiscount = 0;
@@ -38,7 +40,7 @@ export const createCheckoutSession = async (req, res) => {
       for (const couponCode of couponCodes) {
         const coupon = await Coupon.findOne({
           code: couponCode,
-          userId: "67f06ec04b967d17645c0223",
+          userId: req.user._id,
           isActive: true
         });
 
@@ -60,8 +62,23 @@ export const createCheckoutSession = async (req, res) => {
       stripeCouponId = await createStripeCoupon(totalDiscount);
     }
 
+    // Add shipping as a separate line item if shipping cost exists
+    if (parsedShippingCost > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'vnd',
+          product_data: {
+            name: 'Shipping Fee',
+            description: 'Shipping and handling',
+          },
+          unit_amount: parsedShippingCost,
+        },
+        quantity: 1,
+      });
+    }
+
     // Ensure totalAmount is valid after discounts
-    const finalAmount = totalAmount - totalDiscount;
+    const finalAmount = totalAmount - totalDiscount + parsedShippingCost;
     if (isNaN(finalAmount) || finalAmount <= 0) {
       return res.status(400).json({ message: "Invalid total amount after discounts" });
     }
@@ -76,7 +93,7 @@ export const createCheckoutSession = async (req, res) => {
       cancel_url: `${process.env.CLIENT_URL}/checkout`,
       discounts: stripeCouponId ? [{ coupon: stripeCouponId }] : [],
       metadata: {
-        userId: "67f06ec04b967d17645c0223",
+        userId: req.user._id.toString(),
         couponCodes: JSON.stringify(couponCodes || []),
         products: JSON.stringify(
           products.map((product) => ({
@@ -85,7 +102,8 @@ export const createCheckoutSession = async (req, res) => {
             price: product.current_seller.price,
           }))
         ),
-        totalDiscount: totalDiscount.toString()
+        totalDiscount: totalDiscount.toString(),
+        shippingCost: parsedShippingCost.toString()
       }
     });
 
@@ -95,6 +113,7 @@ export const createCheckoutSession = async (req, res) => {
       totalAmount: finalAmount,
       originalAmount: totalAmount,
       discount: totalDiscount,
+      shippingCost: parsedShippingCost,
       url: session.url
     });
   } catch (error) {
@@ -126,8 +145,6 @@ async function createStripeCoupon(discount) {
     }
     couponData.amount_off = amountOff;
 
-
-    console.log('Creating Stripe coupon with data:', couponData);
     const coupon = await stripe.coupons.create(couponData);
     return coupon.id;
   } catch (error) {

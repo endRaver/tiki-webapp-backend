@@ -2,7 +2,6 @@ import axios from "axios";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken"
 import crypto from "crypto"
-import bcrypt from 'bcrypt';
 
 import User from "../models/user.model.js";
 
@@ -135,8 +134,6 @@ export const login = async (req, res) => {
     } else {
       return res.status(401).json({ message: "Email hoặc mật khẩu không hợp lệ" })
     }
-
-
   } catch (error) {
     console.log('Error in login controller', error.message);
     res.status(500).json({ message: error.message });

@@ -33,6 +33,7 @@ export const validateCoupon = async (req, res) => {
       discountFor: coupon.discountFor,
       maxDiscount: coupon.maxDiscount,
       expirationDate: coupon.expirationDate,
+      minOrderAmount: coupon.minOrderAmount,
     });
   } catch (error) {
     console.log("Error in validateCoupon controller", error.message);
