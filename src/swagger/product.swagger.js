@@ -22,6 +22,27 @@
 
 /**
  * @swagger
+ * /products/{id}:
+ *   get:
+ *     summary: Get a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the product to retrieve
+ *         schema:
+ *           type: string 
+ *     responses:
+ *       200:
+ *         description: A product
+ *       404:
+ *         description: Product not found
+ *       500:
+ *         description: Server error
+
+/**
+ * @swagger
  * /products/category/{category}:
  *   get:
  *     summary: Get products by category

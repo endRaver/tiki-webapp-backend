@@ -12,6 +12,7 @@ import { protectedRoute, adminRoute } from "../middleware/auth.middleware.js";
 import { upload } from "../lib/multer.js";
 const router = express.Router();
 
+
 router.get('/', getAllProducts);
 router.get('/:id', getProductById);
 router.get('/category/:category', getProductsByCategory);

@@ -157,3 +157,10 @@
  *         description: Server error
  */
 
+/**
+ * @swagger
+ * /auth/users:
+ *   get:
+ *     summary: Get all users
+ *     tags: [Auth]
+ *     responses:

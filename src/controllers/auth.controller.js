@@ -348,3 +348,22 @@ export const resetPassword = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 }
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users.map(user => ({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isVerified: user.isVerified,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    })));
+  } catch (error) {
+    console.error('Error getting all users:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+

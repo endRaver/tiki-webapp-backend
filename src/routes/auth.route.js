@@ -8,14 +8,16 @@ import {
   googleAuth,
   verifyEmail,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  getAllUsers
 } from "../controllers/auth.controller.js";
-import { protectedRoute } from "../middleware/auth.middleware.js";
+import { protectedRoute, adminRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
 router.get('/profile', protectedRoute, getProfile);
 
+router.get('/users', protectedRoute, adminRoute, getAllUsers);
 router.post('/signup', signup);
 router.post('/login', login);
 router.post('/logout', logout);
