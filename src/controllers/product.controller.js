@@ -341,3 +341,16 @@ export const getProductsByCategory = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 }
+
+export const getCategories = async (req, res) => {
+  try {
+    const categories = await Product.distinct('categories.name');
+    res.status(200).json(categories);
+  } catch (error) {
+    console.log("Error in getCategories controller", error.message);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+}
+
+
+

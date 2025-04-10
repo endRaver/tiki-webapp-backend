@@ -243,3 +243,17 @@
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * /products/categories:
+ *   get:
+ *     summary: Get all categories
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: A list of categories
+ *       500:
+ *         description: Server error
+ */
+
