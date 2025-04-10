@@ -164,3 +164,10 @@
  *     summary: Get all users
  *     tags: [Auth]
  *     responses:
+ *       200:
+ *         description: Users fetched successfully
+ *       500:
+ *         description: Server error
+ */
+
+
