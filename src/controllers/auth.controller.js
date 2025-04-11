@@ -6,7 +6,7 @@ import crypto from "crypto"
 import User from "../models/user.model.js";
 
 import { redis } from "../lib/redis.js";
-import { sendResetPasswordEmail, sendResetSuccessEmail, sendVerificationEmail } from "../mailtrap/emails.js";
+import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail } from "../mailtrap/emails.js";
 
 dotenv.config();
 
@@ -101,42 +101,78 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email và mật khẩu không được để trống"
+      });
+    }
+
+    // Find user
     const user = await User.findOne({ email });
 
+    // Check if user exists
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Email hoặc mật khẩu không hợp lệ"
+      });
+    }
+
+    // Check if user is verified
     if (!user.isVerified) {
-      return res.status(400).json({ message: 'Vui lòng xác thực email của bạn' });
+      return res.status(400).json({
+        success: false,
+        message: 'Vui lòng xác thực email của bạn'
+      });
     }
 
-    if (user && (await user.comparePassword(password))) {
-      const { accessToken, refreshToken } = generateTokens(user._id)
+    // Check if user should use Google auth
+    if (user.authType === 'google') {
+      return res.status(400).json({
+        success: false,
+        message: "Tài khoản này sử dụng xác thực Google. Vui lòng đăng nhập bằng Google."
+      });
+    }
 
-      if (user.authType === 'google') {
-        return res.status(400).json({
-          message: "Tài khoản này sử dụng xác thực Google. Vui lòng đăng nhập bằng Google."
-        });
+    // Verify password
+    const isValidPassword = await user.comparePassword(password);
+    if (!isValidPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Email hoặc mật khẩu không hợp lệ"
+      });
+    }
+
+    // Generate tokens
+    const { accessToken, refreshToken } = generateTokens(user._id);
+    await storeRefreshToken(user._id, refreshToken);
+    setCookies(res, accessToken, refreshToken);
+
+    // Update last login
+    user.lastLogin = new Date();
+    await user.save();
+
+    // Send success response
+    return res.status(200).json({
+      success: true,
+      message: "Đăng nhập thành công",
+      user: {
+        ...user._doc,
+        password: undefined,
+        cartItems: undefined
       }
+    });
 
-      await storeRefreshToken(user._id, refreshToken)
-      setCookies(res, accessToken, refreshToken)
-
-      user.lastLogin = new Date();
-      await user.save();
-
-      res.json({
-        success: true,
-        message: "Đăng nhập thành công",
-        user: {
-          ...user._doc,
-          password: undefined,
-          cartItems: undefined
-        }
-      })
-    } else {
-      return res.status(401).json({ message: "Email hoặc mật khẩu không hợp lệ" })
-    }
   } catch (error) {
-    console.log('Error in login controller', error.message);
-    res.status(500).json({ message: error.message });
+    console.error('Error in login controller:', error);
+    return res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi trong quá trình đăng nhập",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
@@ -300,10 +336,7 @@ export const forgotPassword = async (req, res) => {
     user.resetPasswordExpiresAt = resetTokenExpiresAt;
     await user.save();
 
-    await sendResetPasswordEmail(
-      user.email,
-      `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`
-    );
+    await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
 
     return res.status(200).json({
       success: true,
@@ -325,8 +358,6 @@ export const resetPassword = async (req, res) => {
       resetPasswordToken: token,
       resetPasswordExpiresAt: { $gt: Date.now() },
     });
-
-    console.log('user', token);
 
     if (!user) {
       return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
@@ -363,4 +394,6 @@ export const getAllUsers = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 }
+
+
 

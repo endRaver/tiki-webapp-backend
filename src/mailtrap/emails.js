@@ -45,7 +45,7 @@ export const sendWelcomeEmail = async (email, name) => {
   }
 }
 
-export const sendResetPasswordEmail = async (email, resetURL) => {
+export const sendPasswordResetEmail = async (email, resetURL) => {
   const recipient = [{ email }]
 
   try {

@@ -170,14 +170,28 @@ async function createNewCoupon(userId) {
 export const checkoutSuccess = async (req, res) => {
   try {
     const { sessionId } = req.body;
+
+    // Check if order already exists for this session
+    const existingOrder = await Order.findOne({ stripeSessionId: sessionId });
+    if (existingOrder) {
+      return res.status(200).json({
+        success: true,
+        message: "Order already processed",
+        orderId: existingOrder._id,
+      });
+    }
+
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (session.payment_status === "paid") {
-      if (session.metadata.couponCode) {
-        await Coupon.findOneAndUpdate(
+      // Deactivate used coupons
+      const couponCodes = JSON.parse(session.metadata.couponCodes || '[]');
+      if (couponCodes.length > 0) {
+        await Coupon.updateMany(
           {
-            code: session.metadata.couponCode,
+            code: { $in: couponCodes },
             userId: session.metadata.userId,
+            isActive: true
           },
           {
             isActive: false,
@@ -185,7 +199,7 @@ export const checkoutSuccess = async (req, res) => {
         );
       }
 
-      // create a new Order
+      // Create a new Order
       const products = JSON.parse(session.metadata.products);
       const newOrder = new Order({
         user: session.metadata.userId,
@@ -193,6 +207,8 @@ export const checkoutSuccess = async (req, res) => {
           product: product.id,
           quantity: product.quantity,
           price: product.price,
+          shippingPrice: product.shippingPrice,
+          shippingDate: product.shippingDate
         })),
         totalAmount: session.amount_total,
         stripeSessionId: sessionId,
@@ -202,12 +218,21 @@ export const checkoutSuccess = async (req, res) => {
 
       res.status(200).json({
         success: true,
-        message: "Payment successful, order created, and coupon deactivated if used.",
+        message: "Payment successful, order created, and coupons deactivated if used.",
         orderId: newOrder._id,
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Payment not completed",
       });
     }
   } catch (error) {
     console.error("Error processing successful checkout:", error);
-    res.status(500).json({ message: "Error processing successful checkout", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Error processing successful checkout",
+      error: error.message
+    });
   }
 };

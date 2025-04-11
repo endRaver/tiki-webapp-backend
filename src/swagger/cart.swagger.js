@@ -95,3 +95,16 @@
  *         description: Server error
  */
 
+/**
+ * @swagger
+ * /carts/delete-all:
+ *   delete:
+ *     summary: Remove all items from the cart
+ *     tags: [Cart]
+ *     responses:
+ *       200:
+ *         description: All items removed from cart successfully
+ *       500:
+ *         description: Server error
+ */
+

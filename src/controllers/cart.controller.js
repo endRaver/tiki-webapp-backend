@@ -25,12 +25,12 @@ export const getCartProducts = async (req, res) => {
 
 export const addToCart = async (req, res) => {
   try {
-    const { productId } = req.body;
+    const { productId, quantity } = req.body;
     const user = req.user;
 
     const existingItem = user.cartItems.find((item) => item.id === productId);
     if (existingItem) {
-      existingItem.quantity += 1;
+      existingItem.quantity += quantity;
     } else {
       user.cartItems.push(productId);
     }
@@ -90,5 +90,16 @@ export const updateQuantity = async (req, res) => {
   }
 }
 
+export const deleteAllCart = async (req, res) => {
+  try {
+    const user = req.user;
+    user.cartItems = [];
+    await user.save();
+    res.status(200).json(user.cartItems);
+  } catch (error) {
+    console.log("Error in deleteAllCart controller", error.message);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+}
 
 
