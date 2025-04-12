@@ -11,6 +11,8 @@ import cartRoutes from "./routes/cart.route.js";
 import couponRoutes from "./routes/coupon.route.js";
 import paymentRoutes from "./routes/payment.route.js";
 import sellerRoutes from "./routes/seller.route.js";
+import orderRoutes from "./routes/order.route.js";
+
 import { connectDB } from "./lib/db.js";
 
 dotenv.config();
@@ -31,6 +33,7 @@ app.use("/api/carts", cartRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/sellers", sellerRoutes);
+app.use("/api/orders", orderRoutes);
 
 setupSwagger(app);
 

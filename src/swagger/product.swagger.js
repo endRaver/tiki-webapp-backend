@@ -42,6 +42,26 @@
  *         description: Server error
  */
 
+/**   
+ * @swagger
+ * /products/keyword/{keyword}:
+ *   get:
+ *     summary: Get products by keyword
+ *     tags: [Products]
+ *     parameters:
+ *       - name: keyword
+ *         in: path
+ *         required: true
+ *         description: The keyword to search for
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A list of products
+ *       500:
+ *         description: Server error
+ */
+
 /**
  * @swagger
  * /products/category/{category}:

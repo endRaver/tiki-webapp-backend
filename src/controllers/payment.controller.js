@@ -1,16 +1,29 @@
 import Coupon from "../models/coupon.model.js";
 import { stripe } from "../lib/stripe.js";
 import Order from "../models/order.model.js";
+import User from "../models/user.model.js";
+import Product from "../models/product.model.js";
 
 export const createCheckoutSession = async (req, res) => {
   try {
-    const { products, couponCodes, shippingCost } = req.body;
+    const { products, couponCodes, shippingPrice } = req.body;
     if (!Array.isArray(products) || products.length === 0) {
       return res.status(400).json({ message: "Invalid or empty products array" });
     }
 
+    let shippingCoupon = null;
+
+    for (const couponCode of couponCodes) {
+      shippingCoupon = await Coupon.findOne({
+        code: couponCode,
+        discountFor: "shipping",
+        isActive: true
+      });
+    }
+
+
     // Parse shipping cost to number
-    const parsedShippingCost = Number(shippingCost) || 0;
+    const parsedShippingPrice = Number(shippingPrice) || 0;
 
     let totalAmount = 0;
     let totalDiscount = 0;
@@ -63,7 +76,7 @@ export const createCheckoutSession = async (req, res) => {
     }
 
     // Add shipping as a separate line item if shipping cost exists
-    if (parsedShippingCost > 0) {
+    if (parsedShippingPrice > 0) {
       lineItems.push({
         price_data: {
           currency: 'vnd',
@@ -71,14 +84,14 @@ export const createCheckoutSession = async (req, res) => {
             name: 'Shipping Fee',
             description: 'Shipping and handling',
           },
-          unit_amount: parsedShippingCost,
+          unit_amount: parsedShippingPrice,
         },
         quantity: 1,
       });
     }
 
     // Ensure totalAmount is valid after discounts
-    const finalAmount = totalAmount - totalDiscount + parsedShippingCost;
+    const finalAmount = totalAmount - totalDiscount + parsedShippingPrice;
     if (isNaN(finalAmount) || finalAmount <= 0) {
       return res.status(400).json({ message: "Invalid total amount after discounts" });
     }
@@ -98,12 +111,15 @@ export const createCheckoutSession = async (req, res) => {
         products: JSON.stringify(
           products.map((product) => ({
             id: product._id,
+            name: product.name,
             quantity: product.quantity,
             price: product.current_seller.price,
           }))
         ),
         totalDiscount: totalDiscount.toString(),
-        shippingCost: parsedShippingCost.toString()
+        shippingPrice: parsedShippingPrice.toString(),
+        shippingDate: products[0].shippingDate.toString(),
+        shippingDiscount: shippingCoupon ? shippingCoupon.discount.toString() : '0',
       }
     });
 
@@ -113,7 +129,7 @@ export const createCheckoutSession = async (req, res) => {
       totalAmount: finalAmount,
       originalAmount: totalAmount,
       discount: totalDiscount,
-      shippingCost: parsedShippingCost,
+      shippingPrice: parsedShippingPrice,
       url: session.url
     });
   } catch (error) {
@@ -199,17 +215,24 @@ export const checkoutSuccess = async (req, res) => {
         );
       }
 
-      // Create a new Order
+      const user = await User.findById(session.metadata.userId);
+
       const products = JSON.parse(session.metadata.products);
+      const storeProducts = await Product.find({ _id: { $in: products.map(product => product.id) } });
+
+      // Create a new Order
       const newOrder = new Order({
-        user: session.metadata.userId,
+        user: user,
         products: products.map((product) => ({
-          product: product.id,
+          product: storeProducts.find(p => p._id.equals(product.id)),
           quantity: product.quantity,
           price: product.price,
-          shippingPrice: product.shippingPrice,
-          shippingDate: product.shippingDate
         })),
+        status: 'confirmed',
+        shippingPrice: session.metadata.shippingPrice,
+        shippingDate: session.metadata.shippingDate,
+        shippingDiscount: session.metadata.shippingDiscount,
+        paymentMethod: session.payment_method_types[0],
         totalAmount: session.amount_total,
         stripeSessionId: sessionId,
       });
@@ -219,7 +242,7 @@ export const checkoutSuccess = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Payment successful, order created, and coupons deactivated if used.",
-        orderId: newOrder._id,
+        order: newOrder,
       });
     } else {
       res.status(400).json({

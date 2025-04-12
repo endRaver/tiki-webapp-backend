@@ -33,6 +33,19 @@ export const getProductById = async (req, res) => {
   res.status(200).json(product);
 }
 
+export const getProductByKeyword = async (req, res) => {
+  const { keyword } = req.params;
+
+  try {
+    const products = await Product.find({ name: { $regex: keyword, $options: 'i' } });
+    res.status(200).json(products);
+
+  } catch (error) {
+    console.log("Error in getProductByKeyword controller", error.message);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+}
+
 export const createProduct = async (req, res) => {
   try {
     const {
