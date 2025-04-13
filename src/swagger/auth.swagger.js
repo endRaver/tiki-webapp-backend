@@ -170,4 +170,36 @@
  *         description: Server error
  */
 
-
+/**
+ * @swagger
+ * /auth/users/{id}:
+ *   put:
+ *     summary: Update user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "John Doe"
+ *               email:
+ *                 type: string
+ *                 example: "john.doe@example.com"
+ *               phoneNumber:
+ *                 type: string
+ *                 example: "1234567890"
+ *               address:
+ *                 type: string
+ *                 example: "123 Main St, Anytown, USA"
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *       400:
+ *         description: Invalid user ID
+ *       500:
+ *         description: Server error
+ */

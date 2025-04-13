@@ -33,7 +33,7 @@ export const getOrdersByUser = async (req, res) => {
       .populate({
         path: 'products.product',
         select: 'name images original_price list_price current_seller categories'
-      });
+      }).sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });
