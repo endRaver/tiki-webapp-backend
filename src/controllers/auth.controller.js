@@ -395,5 +395,20 @@ export const getAllUsers = async (req, res) => {
   }
 }
 
+export const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { name, email, phoneNumber, address } = req.body;
+
+  try {
+    const user = await User.findByIdAndUpdate(id, { name, email, phoneNumber, address }, { new: true });
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+
+
 
 

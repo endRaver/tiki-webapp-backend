@@ -9,7 +9,8 @@ import {
   verifyEmail,
   forgotPassword,
   resetPassword,
-  getAllUsers
+  getAllUsers,
+  updateUser
 } from "../controllers/auth.controller.js";
 import { protectedRoute, adminRoute } from "../middleware/auth.middleware.js";
 
@@ -18,6 +19,8 @@ const router = express.Router();
 router.get('/profile', protectedRoute, getProfile);
 
 router.get('/users', protectedRoute, adminRoute, getAllUsers);
+router.put('/users/:id', protectedRoute, updateUser);
+
 router.post('/signup', signup);
 router.post('/login', login);
 router.post('/logout', logout);
@@ -26,7 +29,6 @@ router.post('/refresh-token', refreshToken);
 
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
-
 
 router.post('/google', googleAuth);
 
