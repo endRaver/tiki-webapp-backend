@@ -20,6 +20,12 @@ export const getAllProducts = async (req, res) => {
         sortOptions = { 'current_seller.price': 1 };
       } else if (sort === 'price_desc') {
         sortOptions = { 'current_seller.price': -1 };
+      } else if (sort === 'date_asc') {
+        sortOptions = { 'createdAt': 1 };
+      } else if (sort === 'date_desc') {
+        sortOptions = { 'createdAt': -1 };
+      } else if (sort === 'best_seller') {
+        sortOptions = { 'quantity_sold.value': -1 };
       }
     }
 

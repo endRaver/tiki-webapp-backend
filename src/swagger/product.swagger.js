@@ -35,6 +35,21 @@
 
 /**
  * @swagger
+ * /products?sort=best_seller:
+ *   get:
+ *     summary: Get all products sorted by price (descending)
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: A list of products sorted by price (descending)
+ *       500:
+ *         description: Server error
+ */
+
+
+
+/**
+ * @swagger
  * /products/{id}:
  *   get:
  *     summary: Get a product by ID
