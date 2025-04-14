@@ -15,11 +15,11 @@ import { upload } from "../lib/multer.js";
 const router = express.Router();
 
 router.get('/', getAllProducts);
-router.get('/:id', getProductById);
-router.get('/keyword/:keyword', getProductByKeyword);
+router.get('/search/:keyword', getProductByKeyword);
 router.get('/category/:category', getProductsByCategory);
 router.get('/categories', getCategories);
-router.get('/recommendations', getRecommendedProducts);
+router.get('/recommended', getRecommendedProducts);
+router.get('/:id', getProductById);
 router.post('/', protectedRoute, adminRoute, upload.array('images'), createProduct);
 router.put('/:id', protectedRoute, adminRoute, upload.array('images'), updateProduct);
 router.delete('/:id', protectedRoute, adminRoute, deleteProduct);

@@ -369,13 +369,19 @@ export const getProductsByCategory = async (req, res) => {
 
 export const getCategories = async (req, res) => {
   try {
+    // Fetch distinct category names from the Product model
     const categories = await Product.distinct('categories.name');
+
+    // Check if categories were found
+    if (!categories || categories.length === 0) {
+      return res.status(404).json({ message: 'No categories found' });
+    }
+
+    // Respond with the categories
     res.status(200).json(categories);
   } catch (error) {
     console.log("Error in getCategories controller", error.message);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 }
-
-
 

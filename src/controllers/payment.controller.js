@@ -21,7 +21,6 @@ export const createCheckoutSession = async (req, res) => {
       });
     }
 
-
     // Parse shipping cost to number
     const parsedShippingPrice = Number(shippingPrice) || 0;
 
@@ -259,3 +258,51 @@ export const checkoutSuccess = async (req, res) => {
     });
   }
 };
+
+export const createCashOrder = async (req, res) => {
+  try {
+    const { products, shippingDate, shippingPrice, shippingDiscount, totalAmount } = req.body;
+    const user = req.user;
+
+    const storeProducts = await Product.find({ _id: { $in: products.map(product => product._id) } });
+
+    const orderProducts = products.map((product) => {
+      const storeProduct = storeProducts.find(p => p._id.toString() === product._id);
+      if (!storeProduct) {
+        throw new Error(`Product with ID ${product.id} not found`);
+      }
+      return {
+        product: storeProduct,
+        quantity: product.quantity,
+        price: storeProduct.current_seller.price,
+      };
+    });
+
+    const newOrder = new Order({
+      user: user,
+      products: orderProducts,
+      status: 'confirmed',
+      shippingPrice: shippingPrice,
+      shippingDate: shippingDate,
+      shippingDiscount: shippingDiscount,
+      paymentMethod: 'cash',
+      totalAmount: totalAmount,
+      stripeSessionId: Math.random().toString(36).substring(2, 15),
+    });
+
+    await newOrder.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Payment successful, order created, and coupons deactivated if used.",
+      order: newOrder,
+    });
+  } catch (error) {
+    console.error("Error processing successful checkout:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error processing successful checkout",
+      error: error.message
+    });
+  }
+}
