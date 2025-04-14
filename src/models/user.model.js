@@ -69,12 +69,6 @@ const userSchema = new mongoose.Schema({
   },
   phoneNumber: {
     type: String,
-    validate: {
-      validator: function (v) {
-        return /^\d{10}$/.test(v);
-      },
-      message: 'Please enter a valid 10-digit phone number',
-    },
     default: '',
   },
   address: {

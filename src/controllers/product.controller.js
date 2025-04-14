@@ -11,14 +11,22 @@ const getTransformedUrl = (url, transformation) => {
 
 export const getAllProducts = async (req, res) => {
   try {
+    const { sort } = req.query;
+    let sortOptions = {};
+
+    // Only apply sorting if sort parameter is provided
+    if (sort) {
+      if (sort === 'price_asc') {
+        sortOptions = { 'current_seller.price': 1 };
+      } else if (sort === 'price_desc') {
+        sortOptions = { 'current_seller.price': -1 };
+      }
+    }
+
     const productsWithSellers = await Product.find({})
       .populate('current_seller.seller')
+      .sort(Object.keys(sortOptions).length > 0 ? sortOptions : undefined)
       .lean(); // Convert Mongoose documents to plain JS objects
-
-    const formattedProducts = productsWithSellers.map(product => {
-
-      return product;
-    });
 
     res.status(200).json({ products: productsWithSellers });
   } catch (error) {
@@ -109,8 +117,6 @@ export const createProduct = async (req, res) => {
       small_url: getTransformedUrl(imageUrl, "w_300,h_300,c_fill"),
       thumbnail_url: getTransformedUrl(imageUrl, "w_150,h_150,c_fill"),
     }));
-
-    console.log("specifications", specifications);
 
     // Format specifications if provided
     let formattedSpecifications = [];
