@@ -10,7 +10,8 @@ import {
   forgotPassword,
   resetPassword,
   getAllUsers,
-  updateUser
+  updateUser,
+  deleteUser
 } from "../controllers/auth.controller.js";
 import { protectedRoute, adminRoute } from "../middleware/auth.middleware.js";
 
