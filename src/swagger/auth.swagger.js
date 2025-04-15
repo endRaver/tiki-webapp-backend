@@ -203,3 +203,23 @@
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * /auth/users/{id}:
+ *   delete:
+ *     summary: Delete user
+ *     tags: [Auth]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses: 
+ *       200:
+ *         description: User deleted successfully
+ *       400:
+ *         description: Invalid user ID
+ *       500:
+ *         description: Server error
+ */
