@@ -408,6 +408,24 @@ export const updateUser = async (req, res) => {
   }
 }
 
+export const deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ success: false, message: 'User ID is required' });
+  }
+
+  try {
+    await User.findByIdAndDelete(id);
+    res.status(200).json({ success: true, message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+
+
 
 
 

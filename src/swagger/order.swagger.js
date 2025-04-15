@@ -37,7 +37,11 @@
  * /orders/{id}:
  *   put:
  *     summary: Update order by id
- *     tags: [Order]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The id of the order to update
  *     requestBody:
  *       required: true
  *       content:
@@ -52,7 +56,12 @@
  *                   - confirmed
  *                   - shipped
  *                   - delivered
- *                   - cancelled
+ *     tags: [Order]
+ *     responses:
+ *       200:
+ *         description: Order updated successfully
+ *       500:
+ *         description: Server error
  */
 
 /**

@@ -10,7 +10,8 @@ import {
   forgotPassword,
   resetPassword,
   getAllUsers,
-  updateUser
+  updateUser,
+  deleteUser
 } from "../controllers/auth.controller.js";
 import { protectedRoute, adminRoute } from "../middleware/auth.middleware.js";
 
@@ -26,6 +27,7 @@ router.post('/login', login);
 router.post('/logout', logout);
 router.post('/verify-email', verifyEmail)
 router.post('/refresh-token', refreshToken);
+router.delete('/users/:id', protectedRoute, adminRoute, deleteUser);
 
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);

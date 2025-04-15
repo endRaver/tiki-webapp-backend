@@ -45,24 +45,20 @@ export const updateOrder = async (req, res) => {
 
   const {
     status,
-    shippingPrice,
-    shippingDate,
-    shippingDiscount,
-    paymentMethod
   } = req.body;
 
-  if (!status || !shippingPrice || !shippingDate || !shippingDiscount || !paymentMethod) {
+  if (!status) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   try {
     const order = await Order.findByIdAndUpdate(id, {
-      status,
-      shippingPrice,
-      shippingDate,
-      shippingDiscount,
-      paymentMethod
+      status
     }, { new: true });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
 
     res.status(200).json(order);
   } catch (error) {
