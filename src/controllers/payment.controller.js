@@ -111,7 +111,6 @@ export const createCheckoutSession = async (req, res) => {
         products: JSON.stringify(
           products.map((product) => ({
             id: product._id,
-            name: product.name,
             quantity: product.quantity,
             price: product.current_seller.price,
           }))
