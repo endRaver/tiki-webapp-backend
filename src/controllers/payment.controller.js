@@ -101,8 +101,8 @@ export const createCheckoutSession = async (req, res) => {
       line_items: lineItems,
       mode: 'payment',
       currency: 'vnd',
-      success_url: `${process.env.CLIENT_URL}/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/checkout`,
+      success_url: `https://tiki-webapp-frontend.onrender.com/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `https://tiki-webapp-frontend.onrender.com/checkout`,
       discounts: stripeCouponId ? [{ coupon: stripeCouponId }] : [],
       metadata: {
         userId: req.user._id.toString(),
