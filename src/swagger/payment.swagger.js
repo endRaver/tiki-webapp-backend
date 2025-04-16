@@ -6,7 +6,6 @@
  *   description: Payment management
  */
 
-// TODO: Double check the request body
 /**
  * @swagger
  * /payment:

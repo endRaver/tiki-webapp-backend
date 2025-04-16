@@ -59,7 +59,7 @@ export const signup = async (req, res) => {
       userExists.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
       await userExists.save();
 
-      sendVerificationEmail(userExists.email, userExists.verificationToken);  // TODO: Remove when email verification is implemented
+      sendVerificationEmail(userExists.email, userExists.verificationToken);  
 
       return res.status(400).json({ message: 'Tài khoản đã tồn tại, vui lòng xác thực email' });
     }
@@ -70,7 +70,6 @@ export const signup = async (req, res) => {
       name: email.split('@')[0],
       email,
       password,
-      // isVerified: true, // TODO: Remove when email verification is implemented
       verificationToken,
       verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
     });
@@ -81,7 +80,7 @@ export const signup = async (req, res) => {
 
     setCookies(res, accessToken, refreshToken);
 
-    sendVerificationEmail(user.email, verificationToken);  // TODO: Uncomment when email verification is implemented
+    sendVerificationEmail(user.email, verificationToken);  
 
     res.status(201).json({
       success: true,
