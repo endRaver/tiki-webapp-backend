@@ -11,8 +11,13 @@ const getTransformedUrl = (url, transformation) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const { sort } = req.query;
+    const { sort, page = 1, limit = 10 } = req.query;
     let sortOptions = {};
+
+    // Convert page and limit to numbers
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+    const skip = (pageNumber - 1) * limitNumber;
 
     // Only apply sorting if sort parameter is provided
     if (sort) {
@@ -29,12 +34,25 @@ export const getAllProducts = async (req, res) => {
       }
     }
 
+    // Get total count of products
+    const totalProducts = await Product.countDocuments({});
+
     const productsWithSellers = await Product.find({})
       .populate('current_seller.seller')
       .sort(Object.keys(sortOptions).length > 0 ? sortOptions : undefined)
-      .lean(); // Convert Mongoose documents to plain JS objects
+      .skip(skip)
+      .limit(limitNumber)
+      .lean();
 
-    res.status(200).json({ products: productsWithSellers });
+    res.status(200).json({
+      products: productsWithSellers,
+      pagination: {
+        total: totalProducts,
+        page: pageNumber,
+        pages: Math.ceil(totalProducts / limitNumber),
+        limit: limitNumber
+      }
+    });
   } catch (error) {
     console.log("Error in getAllProducts controller", error.message);
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -336,15 +354,16 @@ export const getRecommendedProducts = async (req, res) => {
   try {
     const products = await Product.aggregate([
       {
-        $sample: { size: 4 }
+        $match: {
+          'quantity_sold.value': { $gte: 1000 }
+        }
       },
       {
-        $project: {
-          _id: 1,
-          name: 1,
-          description: 1,
-          image: 1,
-          price: 1,
+        $sample: { size: 10 }
+      },
+      {
+        $sort: {
+          'quantity_sold.value': -1
         }
       }
     ]);
@@ -360,6 +379,7 @@ export const getProductsByCategory = async (req, res) => {
   const { category } = req.params;
   try {
     const products = await Product.find({ 'categories.name': category });
+
     res.status(200).json(products);
   } catch (error) {
     console.log("Error in getProductsByCategory controller", error.message);

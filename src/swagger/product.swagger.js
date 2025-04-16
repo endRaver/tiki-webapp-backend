@@ -114,7 +114,7 @@
 
 /**
  * @swagger
- * /products/recommendations:
+ * /products/recommended:
  *   get:
  *     summary: Get recommended products
  *     tags: [Products]
