@@ -36,7 +36,19 @@ export const addToCart = async (req, res) => {
     }
 
     await user.save();
-    res.status(200).json(user.cartItems);
+
+    // Find the updated or newly added item
+    const updatedItem = user.cartItems.find((item) => item.id === productId);
+    const product = await Product.findById(productId);
+
+    const cartItems = {
+      ...product.toJSON(),
+      quantity: quantity,
+      shippingPrice: updatedItem.shippingPrice,
+      shippingDate: updatedItem.shippingDate
+    }
+
+    res.status(200).json(cartItems);
   } catch (error) {
     console.log("Error in addToCart controller", error.message);
     res.status(500).json({ message: 'Server error', error: error.message });
