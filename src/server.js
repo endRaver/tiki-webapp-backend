@@ -28,7 +28,7 @@ app.use(cors({
     'http://localhost:5173',
     'http://localhost:3000',
     'http://localhost:5174',
-    process.env.CLIENT_URL
+    'https://tiki-webapp-frontend.onrender.com/'
   ],
   credentials: true,
 }));
