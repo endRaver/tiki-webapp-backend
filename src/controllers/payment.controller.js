@@ -281,7 +281,7 @@ export const createCashOrder = async (req, res) => {
     const newOrder = new Order({
       user: user,
       products: orderProducts,
-      status: 'confirmed',
+      status: 'pending',
       shippingPrice: shippingPrice,
       shippingDate: shippingDate,
       shippingDiscount: shippingDiscount,
