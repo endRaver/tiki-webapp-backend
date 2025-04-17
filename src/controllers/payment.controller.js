@@ -34,12 +34,13 @@ export const createCheckoutSession = async (req, res) => {
         throw new Error(`Invalid price for product: ${product.name}`);
       }
       totalAmount += amount * (product.quantity || 1);
+
       return {
         price_data: {
           currency: 'vnd',
           product_data: {
             name: product.name,
-            images: [product.image],
+            images: product.images && product.images.length > 0 ? [product.images[0].thumbnail_url] : [],
           },
           unit_amount: amount,
         },
@@ -110,7 +111,6 @@ export const createCheckoutSession = async (req, res) => {
         products: JSON.stringify(
           products.map((product) => ({
             id: product._id,
-            name: product.name,
             quantity: product.quantity,
             price: product.current_seller.price,
           }))
