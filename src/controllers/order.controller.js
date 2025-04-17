@@ -22,7 +22,7 @@ export const getOrderById = async (req, res) => {
       })
       .populate({
         path: 'user',
-        select: 'name email phone_number address'
+        select: 'name email phoneNumber address'
       });
     res.status(200).json(order);
   } catch (error) {
