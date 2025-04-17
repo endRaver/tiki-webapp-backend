@@ -15,10 +15,15 @@ export const getOrderById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const order = await Order.findById(id).populate({
-      path: 'products.product',
-      select: 'name images original_price list_price current_seller categories'
-    });
+    const order = await Order.findById(id)
+      .populate({
+        path: 'products.product',
+        select: 'name images original_price list_price current_seller categories'
+      })
+      .populate({
+        path: 'user',
+        select: 'name email phone_number address'
+      });
     res.status(200).json(order);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -31,14 +36,9 @@ export const getOrdersByUser = async (req, res) => {
   try {
     const orders = await Order.find({ user: userId })
       .populate({
-        path: 'user',
-        select: 'name email phoneNumber address'
-      })
-      .populate({
         path: 'products.product',
         select: 'name images original_price list_price current_seller categories'
-      })
-      .sort({ createdAt: -1 });
+      }).sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });
