@@ -5,9 +5,9 @@ import Coupon from '../models/coupon.model.js';
 dotenv.config();
 
 const userIds = [
-  "67f06ec04b967d17645c0223", // Replace with actual user IDs from your database
-  "67f06ec04b967d17645c0223",
-  "67f06ec04b967d17645c0223"
+  "67f76b3f1179efdf09cad12c", // Replace with actual user IDs from your database
+  "67f76b3f1179efdf09cad12c",
+  "67f76b3f1179efdf09cad12c"
 ];
 
 const couponData = [
