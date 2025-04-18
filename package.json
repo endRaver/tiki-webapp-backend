@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "seed:products": "node src/seeds/products.js",
     "seed:coupons": "node src/seeds/coupons.js",
+    "seed:orders": "node src/seeds/orders.js",
     "build": "npm install"
   },
   "keywords": [],

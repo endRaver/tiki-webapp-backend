@@ -11,7 +11,7 @@ const getTransformedUrl = (url, transformation) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const { sort, page = 1, limit = 10 } = req.query;
+    const { sort, page = 1, limit = 10, all = false } = req.query;
     let sortOptions = {};
 
     // Convert page and limit to numbers
@@ -37,22 +37,37 @@ export const getAllProducts = async (req, res) => {
     // Get total count of products
     const totalProducts = await Product.countDocuments({});
 
-    const productsWithSellers = await Product.find({})
-      .populate('current_seller.seller')
-      .sort(Object.keys(sortOptions).length > 0 ? sortOptions : undefined)
-      .skip(skip)
-      .limit(limitNumber)
-      .lean();
+    let productsWithSellers;
+    if (all === 'true') {
+      // Get all products without pagination
+      productsWithSellers = await Product.find({})
+        .populate('current_seller.seller')
+        .sort(Object.keys(sortOptions).length > 0 ? sortOptions : undefined)
+        .lean();
 
-    res.status(200).json({
-      products: productsWithSellers,
-      pagination: {
-        total: totalProducts,
-        page: pageNumber,
-        pages: Math.ceil(totalProducts / limitNumber),
-        limit: limitNumber
-      }
-    });
+      res.status(200).json({
+        products: productsWithSellers,
+        total: totalProducts
+      });
+    } else {
+      // Get paginated products
+      productsWithSellers = await Product.find({})
+        .populate('current_seller.seller')
+        .sort(Object.keys(sortOptions).length > 0 ? sortOptions : undefined)
+        .skip(skip)
+        .limit(limitNumber)
+        .lean();
+
+      res.status(200).json({
+        products: productsWithSellers,
+        pagination: {
+          total: totalProducts,
+          page: pageNumber,
+          pages: Math.ceil(totalProducts / limitNumber),
+          limit: limitNumber
+        }
+      });
+    }
   } catch (error) {
     console.log("Error in getAllProducts controller", error.message);
     res.status(500).json({ message: 'Server error', error: error.message });

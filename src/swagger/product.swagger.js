@@ -13,6 +13,31 @@
  *   get:
  *     summary: Get all products
  *     tags: [Products]
+ *     parameters:
+ *       - name: sort
+ *         in: query
+ *         required: false
+ *         description: Sort products by price (ascending or descending)
+ *         schema:
+ *           type: string
+ *       - name: page     
+ *         in: query
+ *         required: false
+ *         description: Page number
+ *         schema:
+ *           type: number
+ *       - name: limit
+ *         in: query
+ *         required: false
+ *         description: Number of products per page
+ *         schema:
+ *           type: number
+ *       - name: all
+ *         in: query
+ *         required: false
+ *         description: Get all products
+ *         schema:
+ *           type: boolean
  *     responses:
  *       200:
  *         description: A list of products
