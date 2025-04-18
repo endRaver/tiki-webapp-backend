@@ -89,9 +89,20 @@ export const getProductByKeyword = async (req, res) => {
   const { keyword } = req.params;
 
   try {
-    const products = await Product.find({ name: { $regex: keyword, $options: 'i' } });
-    res.status(200).json(products);
+    // Normalize the search keyword
+    const normalizedKeyword = keyword.trim().toLowerCase();
 
+    // Create a more flexible search pattern
+    const searchPattern = normalizedKeyword.split(' ').map(word => `(?=.*${word})`).join('');
+
+    const products = await Product.find({
+      $or: [
+        { name: { $regex: searchPattern, $options: 'i' } },
+        { 'authors.name': { $regex: searchPattern, $options: 'i' } }
+      ]
+    }).populate('current_seller.seller');
+
+    res.status(200).json(products);
   } catch (error) {
     console.log("Error in getProductByKeyword controller", error.message);
     res.status(500).json({ message: 'Server error', error: error.message });

@@ -97,7 +97,7 @@
 
 /**   
  * @swagger
- * /products/keyword/{keyword}:
+ * /products/search/{keyword}:
  *   get:
  *     summary: Get products by keyword
  *     tags: [Products]
@@ -110,10 +110,11 @@
  *           type: string
  *     responses:
  *       200:
- *         description: A list of products
+ *         description: A list of products  
  *       500:
  *         description: Server error
  */
+
 
 /**
  * @swagger
