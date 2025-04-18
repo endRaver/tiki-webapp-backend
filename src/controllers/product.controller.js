@@ -47,7 +47,12 @@ export const getAllProducts = async (req, res) => {
 
       res.status(200).json({
         products: productsWithSellers,
-        total: totalProducts
+        pagination: {
+          total: totalProducts,
+          page: pageNumber,
+          pages: 1,
+          limit: limitNumber
+        }
       });
     } else {
       // Get paginated products
