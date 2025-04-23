@@ -59,6 +59,39 @@ const couponData = [
     userId: userIds[0]
   },
   {
+    code: "SHIPPING",
+    discount: 50000,
+    maxDiscount: 50000,
+    discountType: "amount",
+    discountFor: "shipping",
+    minOrderAmount: 100000,
+    expirationDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
+    isActive: true,
+    userId: userIds[0]
+  },
+  {
+    code: "FREESHOP",
+    discount: 30000,
+    maxDiscount: 30000,
+    discountType: "amount",
+    discountFor: "shipping",
+    minOrderAmount: 100000,
+    expirationDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
+    isActive: true,
+    userId: userIds[0]
+  },
+  {
+    code: "SAVE10K",
+    discount: 10000,
+    maxDiscount: 10000,
+    discountType: "amount",
+    discountFor: "shipping",
+    minOrderAmount: 100000,
+    expirationDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
+    isActive: true,
+    userId: userIds[0]
+  },
+  {
     code: "SAVE50K",
     discount: 50000,
     maxDiscount: 50000,

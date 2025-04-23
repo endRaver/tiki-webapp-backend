@@ -9,6 +9,7 @@
     "seed:products": "node src/seeds/products.js",
     "seed:coupons": "node src/seeds/coupons.js",
     "seed:orders": "node src/seeds/orders.js",
+    "seed:vouchers": "node src/seeds/addVouchersToUsers.js",
     "build": "npm install"
   },
   "keywords": [],
